@@ -1,0 +1,145 @@
+{% extends "venues/base.html" %}
+
+{% block title %}{{ venue.name }} Dashboard - Dekat{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white/60 backdrop-blur-md rounded-5xl p-6 md:p-10 border border-white shadow-card">
+    <div class="flex flex-wrap items-start justify-between gap-4">
+        <div>
+            <a href="{% url 'venue_portal' %}" class="text-sm text-brand-main hover:text-brand-dark mb-2 inline-block">
+                <i class="fa-solid fa-arrow-left"></i> Back to Portal
+            </a>
+            <h1 class="font-display font-bold text-2xl text-gray-900">{{ venue.name }}</h1>
+            <p class="text-sm text-gray-600 mt-1">{{ venue.get_venue_type_display }}</p>
+        </div>
+        <div class="flex gap-2">
+            <a href="{% url 'venue_directory' venue.slug %}" target="_blank" class="inline-flex items-center gap-2 bg-white text-slate-700 border border-slate-200 font-display font-bold py-2 px-4 rounded-3xl shadow-sm hover:shadow-md transition-all">
+                <i class="fa-solid fa-arrow-up-right-from-square"></i> View Live
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Stats Cards -->
+<div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft">
+        <div class="text-sm font-semibold text-gray-600 mb-1">Total Merchants</div>
+        <div class="text-3xl font-display font-bold text-gray-900">{{ total_merchants }}</div>
+    </div>
+    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft">
+        <div class="text-sm font-semibold text-gray-600 mb-1">Featured</div>
+        <div class="text-3xl font-display font-bold text-brand-main">{{ featured_merchants }}</div>
+    </div>
+    <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-soft">
+        <div class="text-sm font-semibold text-gray-600 mb-1">Floors</div>
+        <div class="text-3xl font-display font-bold text-gray-900">{{ floors|length }}</div>
+    </div>
+</div>
+
+<!-- Display Django messages -->
+{% if messages %}
+<div class="mt-6 space-y-2">
+    {% for message in messages %}
+    <div class="bg-{% if message.tags == 'error' %}red{% elif message.tags == 'success' %}green{% else %}blue{% endif %}-100 border border-{% if message.tags == 'error' %}red{% elif message.tags == 'success' %}green{% else %}blue{% endif %}-400 text-{% if message.tags == 'error' %}red{% elif message.tags == 'success' %}green{% else %}blue{% endif %}-700 px-4 py-3 rounded-2xl" role="alert">
+        {{ message }}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- Floors Section -->
+<div class="mt-6 bg-white rounded-5xl p-6 md:p-8 border border-slate-100 shadow-soft">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="font-display font-bold text-xl text-gray-900">Floors</h2>
+        <a href="{% url 'floor_add' venue.id %}" class="inline-flex items-center gap-2 bg-brand-main text-white font-display font-bold text-sm py-2 px-4 rounded-3xl shadow-cute hover:shadow-cute-hover hover:translate-y-1 transition-all">
+            <i class="fa-solid fa-plus"></i> Add Floor
+        </a>
+    </div>
+
+    {% if floors %}
+    <div class="space-y-3">
+        {% for floor in floors %}
+        <div class="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div>
+                <div class="font-display font-bold text-gray-900">{{ floor.name }}</div>
+                <div class="text-sm text-gray-600">{{ floor.merchant_count }} merchant{{ floor.merchant_count|pluralize }}</div>
+            </div>
+            <div class="flex gap-2">
+                <a href="{% url 'floor_edit' venue.id floor.id %}" class="inline-flex items-center gap-1 bg-white text-slate-700 border border-slate-200 font-display font-bold text-xs px-3 py-1.5 rounded-2xl hover:shadow-md transition-all">
+                    <i class="fa-solid fa-pen"></i> Edit
+                </a>
+                <form method="post" action="{% url 'floor_delete' venue.id floor.id %}" onsubmit="return confirm('Are you sure? This will permanently delete this floor if it has no merchants.');">
+                    {% csrf_token %}
+                    <button type="submit" class="inline-flex items-center gap-1 bg-white text-red-600 border border-red-200 font-display font-bold text-xs px-3 py-1.5 rounded-2xl hover:bg-red-50 transition-all">
+                        <i class="fa-solid fa-trash"></i> Delete
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-8 text-gray-500">
+        No floors yet. Add your first floor to start adding merchants.
+    </div>
+    {% endif %}
+</div>
+
+<!-- Merchants Section -->
+<div class="mt-6 bg-white rounded-5xl p-6 md:p-8 border border-slate-100 shadow-soft">
+    <div class="flex items-center justify-between mb-6">
+        <h2 class="font-display font-bold text-xl text-gray-900">Merchants</h2>
+        <div class="flex gap-2">
+            <a href="{% url 'venue_merchants' venue.id %}" class="inline-flex items-center gap-2 bg-white text-slate-700 border border-slate-200 font-display font-bold text-sm py-2 px-4 rounded-3xl hover:shadow-md transition-all">
+                View All
+            </a>
+            <a href="{% url 'merchant_add' venue.id %}" class="inline-flex items-center gap-2 bg-brand-main text-white font-display font-bold text-sm py-2 px-4 rounded-3xl shadow-cute hover:shadow-cute-hover hover:translate-y-1 transition-all">
+                <i class="fa-solid fa-plus"></i> Add Merchant
+            </a>
+        </div>
+    </div>
+
+    {% if merchants %}
+    <div class="space-y-3">
+        {% for merchant in merchants %}
+        <div class="flex items-start justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100">
+            <div class="flex gap-3 min-w-0 flex-1">
+                {% if merchant.logo %}
+                <img src="{{ merchant.logo.url }}" alt="{{ merchant.name }}" class="w-12 h-12 rounded-xl object-cover">
+                {% else %}
+                <div class="w-12 h-12 rounded-xl bg-gray-200 flex items-center justify-center">
+                    <i class="fa-solid fa-store text-gray-400"></i>
+                </div>
+                {% endif %}
+                <div class="min-w-0">
+                    <div class="font-display font-bold text-gray-900">{{ merchant.name }}</div>
+                    <div class="text-sm text-gray-600">{{ merchant.floor.name }} • {{ merchant.lot_number|default:"No lot" }}</div>
+                    <div class="text-xs text-gray-500 mt-1">{{ merchant.category.name|default:"Uncategorized" }}</div>
+                </div>
+            </div>
+            <div class="flex gap-1 flex-shrink-0">
+                {% if merchant.is_featured %}
+                <span class="inline-flex items-center gap-1 text-xs font-extrabold px-2 py-1 rounded-lg bg-yellow-100 text-yellow-700">
+                    <i class="fa-solid fa-star"></i> Featured
+                </span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if total_merchants > 10 %}
+    <div class="mt-4 text-center">
+        <a href="{% url 'venue_merchants' venue.id %}" class="text-brand-main hover:text-brand-dark font-semibold text-sm">
+            View all {{ total_merchants }} merchants →
+        </a>
+    </div>
+    {% endif %}
+    {% else %}
+    <div class="text-center py-8 text-gray-500">
+        No merchants yet. Add your first merchant to get started!
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

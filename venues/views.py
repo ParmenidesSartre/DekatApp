@@ -1,12 +1,13 @@
 from django.core.paginator import Paginator # Import this
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.views.decorators.http import require_http_methods
 from django.contrib.auth.decorators import login_required
 from django.db.utils import OperationalError
-from django.db.models import Q
-from .models import Venue
+from django.db.models import Q, Count
+from django.contrib import messages
+from .models import Venue, Floor
 from merchants.models import Merchant, MerchantCategory, MerchantFollow, MerchantUpdate
-from .forms import VenueLeadForm, VenueCreateForm
+from .forms import VenueLeadForm, VenueCreateForm, MerchantForm, FloorForm
 from .utils import is_open_now
 from accounts.models import UserProfile
 
@@ -197,3 +198,220 @@ def venue_directory(request, slug):
         **ui_context,
     }
     return render(request, 'venues/directory.html', context)
+
+
+# ============================================
+# VENUE OWNER MANAGEMENT VIEWS
+# ============================================
+
+def _check_venue_owner(user, venue):
+    """Helper function to check if user owns the venue"""
+    if venue.owner != user:
+        return False
+    role = getattr(getattr(user, 'userprofile', None), 'role', None)
+    return role == UserProfile.Role.VENUE
+
+
+@login_required
+def venue_dashboard(request, venue_id):
+    """Venue management dashboard for owners"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    # Get stats
+    floors = venue.floors.all().annotate(merchant_count=Count('merchants')).order_by('level_order')
+    merchants = Merchant.objects.filter(floor__venue=venue).select_related('floor', 'category')
+    total_merchants = merchants.count()
+    featured_merchants = merchants.filter(is_featured=True).count()
+
+    context = {
+        'venue': venue,
+        'floors': floors,
+        'merchants': merchants[:10],  # Show recent 10
+        'total_merchants': total_merchants,
+        'featured_merchants': featured_merchants,
+    }
+    return render(request, 'venues/owners/venue_dashboard.html', context)
+
+
+@login_required
+def venue_merchants(request, venue_id):
+    """List all merchants for a venue"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    merchants = Merchant.objects.filter(floor__venue=venue).select_related('floor', 'category').order_by('floor__level_order', 'name')
+
+    context = {
+        'venue': venue,
+        'merchants': merchants,
+    }
+    return render(request, 'venues/owners/merchant_list.html', context)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def merchant_add(request, venue_id):
+    """Add a new merchant to a venue"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    if request.method == "POST":
+        form = MerchantForm(request.POST, request.FILES, venue=venue)
+        if form.is_valid():
+            merchant = form.save()
+            messages.success(request, f'Merchant "{merchant.name}" added successfully!')
+            return redirect('venue_merchants', venue_id=venue.id)
+    else:
+        form = MerchantForm(venue=venue)
+
+    context = {
+        'venue': venue,
+        'form': form,
+        'action': 'Add',
+    }
+    return render(request, 'venues/owners/merchant_form.html', context)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def merchant_edit(request, venue_id, merchant_id):
+    """Edit an existing merchant"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+    merchant = get_object_or_404(Merchant, pk=merchant_id, floor__venue=venue)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    if request.method == "POST":
+        form = MerchantForm(request.POST, request.FILES, instance=merchant, venue=venue)
+        if form.is_valid():
+            merchant = form.save()
+            messages.success(request, f'Merchant "{merchant.name}" updated successfully!')
+            return redirect('venue_merchants', venue_id=venue.id)
+    else:
+        form = MerchantForm(instance=merchant, venue=venue)
+
+    context = {
+        'venue': venue,
+        'form': form,
+        'merchant': merchant,
+        'action': 'Edit',
+    }
+    return render(request, 'venues/owners/merchant_form.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def merchant_delete(request, venue_id, merchant_id):
+    """Delete a merchant"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+    merchant = get_object_or_404(Merchant, pk=merchant_id, floor__venue=venue)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    merchant_name = merchant.name
+    merchant.delete()
+    messages.success(request, f'Merchant "{merchant_name}" deleted successfully!')
+    return redirect('venue_merchants', venue_id=venue.id)
+
+
+@login_required
+@require_http_methods(["POST"])
+def merchant_toggle_featured(request, venue_id, merchant_id):
+    """Toggle featured status for a merchant"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+    merchant = get_object_or_404(Merchant, pk=merchant_id, floor__venue=venue)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    merchant.is_featured = not merchant.is_featured
+    merchant.save()
+
+    status = "featured" if merchant.is_featured else "unfeatured"
+    messages.success(request, f'Merchant "{merchant.name}" {status}!')
+    return redirect('venue_merchants', venue_id=venue.id)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def floor_add(request, venue_id):
+    """Add a new floor to a venue"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    if request.method == "POST":
+        form = FloorForm(request.POST)
+        if form.is_valid():
+            floor = form.save(commit=False)
+            floor.venue = venue
+            floor.save()
+            messages.success(request, f'Floor "{floor.name}" added successfully!')
+            return redirect('venue_dashboard', venue_id=venue.id)
+    else:
+        form = FloorForm()
+
+    context = {
+        'venue': venue,
+        'form': form,
+        'action': 'Add',
+    }
+    return render(request, 'venues/owners/floor_form.html', context)
+
+
+@login_required
+@require_http_methods(["GET", "POST"])
+def floor_edit(request, venue_id, floor_id):
+    """Edit an existing floor"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+    floor = get_object_or_404(Floor, pk=floor_id, venue=venue)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    if request.method == "POST":
+        form = FloorForm(request.POST, instance=floor)
+        if form.is_valid():
+            floor = form.save()
+            messages.success(request, f'Floor "{floor.name}" updated successfully!')
+            return redirect('venue_dashboard', venue_id=venue.id)
+    else:
+        form = FloorForm(instance=floor)
+
+    context = {
+        'venue': venue,
+        'form': form,
+        'floor': floor,
+        'action': 'Edit',
+    }
+    return render(request, 'venues/owners/floor_form.html', context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def floor_delete(request, venue_id, floor_id):
+    """Delete a floor (only if no merchants on it)"""
+    venue = get_object_or_404(Venue, pk=venue_id)
+    floor = get_object_or_404(Floor, pk=floor_id, venue=venue)
+
+    if not _check_venue_owner(request.user, venue):
+        return render(request, 'venues/owners/portal_forbidden.html', status=403)
+
+    if floor.merchants.exists():
+        messages.error(request, f'Cannot delete floor "{floor.name}" - it has merchants. Please move or delete them first.')
+    else:
+        floor_name = floor.name
+        floor.delete()
+        messages.success(request, f'Floor "{floor_name}" deleted successfully!')
+
+    return redirect('venue_dashboard', venue_id=venue.id)

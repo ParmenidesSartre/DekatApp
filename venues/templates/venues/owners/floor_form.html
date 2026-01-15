@@ -1,0 +1,76 @@
+{% extends "venues/base.html" %}
+
+{% block title %}{{ action }} Floor - {{ venue.name }} - Dekat{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white/60 backdrop-blur-md rounded-5xl p-6 md:p-10 border border-white shadow-card">
+    <div>
+        <a href="{% url 'venue_dashboard' venue.id %}" class="text-sm text-brand-main hover:text-brand-dark mb-2 inline-block">
+            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+        </a>
+        <h1 class="font-display font-bold text-2xl text-gray-900">{{ action }} Floor</h1>
+        <p class="text-sm text-gray-600 mt-1">{{ venue.name }}</p>
+    </div>
+</div>
+
+<!-- Form -->
+<div class="mt-6">
+    <form method="post" class="bg-white rounded-5xl p-6 md:p-8 border border-slate-100 shadow-soft max-w-2xl">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-2xl">
+            <strong>Please correct the errors below:</strong>
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <div class="space-y-6">
+            <!-- Floor Name -->
+            <div>
+                <label for="{{ form.name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Floor Name *</label>
+                {{ form.name }}
+                <p class="text-xs text-gray-500 mt-1">e.g., "Ground Floor", "Level 1", "Basement", "Food Court Level"</p>
+            </div>
+
+            <!-- Level Order -->
+            <div>
+                <label for="{{ form.level_order.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Level Order *</label>
+                {{ form.level_order }}
+                <p class="text-xs text-gray-500 mt-1">
+                    Used for sorting floors. Lower numbers appear first (e.g., Basement = -1, Ground = 0, Level 1 = 1, etc.)
+                </p>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex gap-3">
+            <button type="submit" class="inline-flex items-center gap-2 bg-brand-main text-white font-display font-bold py-3 px-6 rounded-3xl shadow-cute hover:shadow-cute-hover hover:translate-y-1 transition-all">
+                <i class="fa-solid fa-check"></i> {{ action }} Floor
+            </button>
+            <a href="{% url 'venue_dashboard' venue.id %}" class="inline-flex items-center gap-2 bg-white text-slate-700 border border-slate-200 font-display font-bold py-3 px-6 rounded-3xl hover:shadow-md transition-all">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Style form inputs to match the design system */
+    input[type="text"],
+    input[type="number"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+        outline: none;
+        border-color: #8B5CF6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+</style>
+{% endblock %}

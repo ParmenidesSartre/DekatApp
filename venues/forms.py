@@ -1,7 +1,8 @@
 from django import forms
 from django.utils.text import slugify
 
-from .models import Venue, VenueLead
+from .models import Venue, VenueLead, Floor
+from merchants.models import Merchant, MerchantCategory
 
 
 class VenueCreateForm(forms.ModelForm):
@@ -35,3 +36,41 @@ class VenueLeadForm(forms.ModelForm):
         widgets = {
             'message': forms.Textarea(attrs={'rows': 5}),
         }
+
+
+class FloorForm(forms.ModelForm):
+    class Meta:
+        model = Floor
+        fields = ['name', 'level_order']
+        widgets = {
+            'name': forms.TextInput(attrs={'placeholder': 'e.g. Ground Floor, Level 1'}),
+            'level_order': forms.NumberInput(attrs={'placeholder': '0'}),
+        }
+
+
+class MerchantForm(forms.ModelForm):
+    class Meta:
+        model = Merchant
+        fields = [
+            'name', 'floor', 'category', 'lot_number', 'nearest_entrance',
+            'logo', 'storefront_image', 'description', 'operating_hours',
+            'phone_number', 'website', 'instagram', 'facebook',
+            'is_halal', 'accepts_ewallet', 'keywords', 'is_featured',
+            'latitude', 'longitude'
+        ]
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 4, 'placeholder': 'Brief description of the merchant...'}),
+            'operating_hours': forms.TextInput(attrs={'placeholder': 'e.g. 10:00 AM - 10:00 PM'}),
+            'phone_number': forms.TextInput(attrs={'placeholder': '+60123456789'}),
+            'lot_number': forms.TextInput(attrs={'placeholder': 'e.g. G-45'}),
+            'nearest_entrance': forms.TextInput(attrs={'placeholder': 'e.g. Near North Entrance'}),
+            'keywords': forms.Textarea(attrs={'rows': 2, 'placeholder': 'Comma-separated keywords for search'}),
+            'latitude': forms.NumberInput(attrs={'step': 'any', 'placeholder': '3.1390'}),
+            'longitude': forms.NumberInput(attrs={'step': 'any', 'placeholder': '101.6869'}),
+        }
+
+    def __init__(self, *args, venue=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Filter floors to only show floors belonging to the current venue
+        if venue:
+            self.fields['floor'].queryset = Floor.objects.filter(venue=venue)

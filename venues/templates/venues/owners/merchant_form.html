@@ -1,0 +1,214 @@
+{% extends "venues/base.html" %}
+
+{% block title %}{{ action }} Merchant - {{ venue.name }} - Dekat{% endblock %}
+
+{% block content %}
+<!-- Header -->
+<div class="bg-white/60 backdrop-blur-md rounded-5xl p-6 md:p-10 border border-white shadow-card">
+    <div>
+        <a href="{% url 'venue_merchants' venue.id %}" class="text-sm text-brand-main hover:text-brand-dark mb-2 inline-block">
+            <i class="fa-solid fa-arrow-left"></i> Back to Merchants
+        </a>
+        <h1 class="font-display font-bold text-2xl text-gray-900">{{ action }} Merchant</h1>
+        <p class="text-sm text-gray-600 mt-1">{{ venue.name }}</p>
+    </div>
+</div>
+
+<!-- Form -->
+<div class="mt-6">
+    <form method="post" enctype="multipart/form-data" class="bg-white rounded-5xl p-6 md:p-8 border border-slate-100 shadow-soft">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="mb-6 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-2xl">
+            <strong>Please correct the errors below:</strong>
+            {{ form.errors }}
+        </div>
+        {% endif %}
+
+        <div class="space-y-6">
+            <!-- Basic Info Section -->
+            <div>
+                <h3 class="font-display font-bold text-lg text-gray-900 mb-4">Basic Information</h3>
+                <div class="space-y-4">
+                    <!-- Name -->
+                    <div>
+                        <label for="{{ form.name.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Merchant Name *</label>
+                        {{ form.name }}
+                    </div>
+
+                    <!-- Floor & Category -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.floor.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Floor *</label>
+                            {{ form.floor }}
+                        </div>
+                        <div>
+                            <label for="{{ form.category.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Category</label>
+                            {{ form.category }}
+                        </div>
+                    </div>
+
+                    <!-- Lot Number & Nearest Entrance -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.lot_number.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Lot Number</label>
+                            {{ form.lot_number }}
+                        </div>
+                        <div>
+                            <label for="{{ form.nearest_entrance.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Nearest Entrance</label>
+                            {{ form.nearest_entrance }}
+                        </div>
+                    </div>
+
+                    <!-- Description -->
+                    <div>
+                        <label for="{{ form.description.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                        {{ form.description }}
+                    </div>
+
+                    <!-- Operating Hours -->
+                    <div>
+                        <label for="{{ form.operating_hours.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Operating Hours</label>
+                        {{ form.operating_hours }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Images Section -->
+            <div>
+                <h3 class="font-display font-bold text-lg text-gray-900 mb-4">Images</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="{{ form.logo.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Logo</label>
+                        {{ form.logo }}
+                        {% if merchant and merchant.logo %}
+                        <div class="mt-2">
+                            <img src="{{ merchant.logo.url }}" alt="Current logo" class="w-24 h-24 rounded-xl object-cover border border-slate-200">
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label for="{{ form.storefront_image.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Storefront Image</label>
+                        {{ form.storefront_image }}
+                        {% if merchant and merchant.storefront_image %}
+                        <div class="mt-2">
+                            <img src="{{ merchant.storefront_image.url }}" alt="Current storefront" class="w-32 h-24 rounded-xl object-cover border border-slate-200">
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contact Info Section -->
+            <div>
+                <h3 class="font-display font-bold text-lg text-gray-900 mb-4">Contact Information</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="{{ form.phone_number.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Phone Number</label>
+                        {{ form.phone_number }}
+                    </div>
+                    <div>
+                        <label for="{{ form.website.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Website</label>
+                        {{ form.website }}
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.instagram.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Instagram URL</label>
+                            {{ form.instagram }}
+                        </div>
+                        <div>
+                            <label for="{{ form.facebook.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Facebook URL</label>
+                            {{ form.facebook }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Section -->
+            <div>
+                <h3 class="font-display font-bold text-lg text-gray-900 mb-4">Features & Settings</h3>
+                <div class="space-y-3">
+                    <label class="flex items-center gap-2">
+                        {{ form.is_halal }}
+                        <span class="text-sm font-semibold text-gray-700">Halal Certified</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        {{ form.accepts_ewallet }}
+                        <span class="text-sm font-semibold text-gray-700">Accepts E-Wallet</span>
+                    </label>
+                    <label class="flex items-center gap-2">
+                        {{ form.is_featured }}
+                        <span class="text-sm font-semibold text-gray-700">Featured Merchant (Premium)</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- SEO & Location Section -->
+            <div>
+                <h3 class="font-display font-bold text-lg text-gray-900 mb-4">Advanced (Optional)</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label for="{{ form.keywords.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Search Keywords</label>
+                        {{ form.keywords }}
+                        <p class="text-xs text-gray-500 mt-1">Comma-separated keywords for better search results</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="{{ form.latitude.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Latitude</label>
+                            {{ form.latitude }}
+                        </div>
+                        <div>
+                            <label for="{{ form.longitude.id_for_label }}" class="block text-sm font-semibold text-gray-700 mb-1">Longitude</label>
+                            {{ form.longitude }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="mt-8 flex gap-3">
+            <button type="submit" class="inline-flex items-center gap-2 bg-brand-main text-white font-display font-bold py-3 px-6 rounded-3xl shadow-cute hover:shadow-cute-hover hover:translate-y-1 transition-all">
+                <i class="fa-solid fa-check"></i> {{ action }} Merchant
+            </button>
+            <a href="{% url 'venue_merchants' venue.id %}" class="inline-flex items-center gap-2 bg-white text-slate-700 border border-slate-200 font-display font-bold py-3 px-6 rounded-3xl hover:shadow-md transition-all">
+                Cancel
+            </a>
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Style form inputs to match the design system */
+    input[type="text"],
+    input[type="url"],
+    input[type="number"],
+    textarea,
+    select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e2e8f0;
+        border-radius: 1rem;
+        font-size: 0.875rem;
+    }
+    input[type="text"]:focus,
+    input[type="url"]:focus,
+    input[type="number"]:focus,
+    textarea:focus,
+    select:focus {
+        outline: none;
+        border-color: #8B5CF6;
+        box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+    input[type="file"] {
+        font-size: 0.875rem;
+    }
+    input[type="checkbox"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        border-radius: 0.375rem;
+        border: 2px solid #e2e8f0;
+    }
+</style>
+{% endblock %}
