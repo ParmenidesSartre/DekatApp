@@ -28,10 +28,15 @@ class Venue(models.Model):
     name = models.CharField(max_length=255)
     slug = models.SlugField(unique=True)
     venue_type = models.CharField(max_length=20, choices=VenueType.choices, default=VenueType.MALL)
-    
+
     # Visuals for the landing page
     cover_image = models.ImageField(upload_to='venues/', blank=True, null=True)
-    
+
+    # Location for distance-based search
+    latitude = models.FloatField(blank=True, null=True, help_text="Venue latitude for location-based search")
+    longitude = models.FloatField(blank=True, null=True, help_text="Venue longitude for location-based search")
+    address = models.TextField(blank=True, help_text="Full address of the venue")
+
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 

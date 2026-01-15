@@ -67,8 +67,67 @@ def terms(request):
     return render(request, 'venues/terms.html')
 
 def venue_list(request):
-    venues = Venue.objects.filter(is_active=True).order_by('name')
-    return render(request, 'venues/venue_list.html', {'venues': venues})
+    import math
+
+    # Get user's location from query params
+    user_lat = request.GET.get('lat')
+    user_lon = request.GET.get('lon')
+    radius = request.GET.get('radius', '30')  # Default 30km
+
+    venues = Venue.objects.filter(is_active=True)
+
+    # Helper function to calculate distance using Haversine formula
+    def calculate_distance(lat1, lon1, lat2, lon2):
+        """Calculate distance between two points in kilometers"""
+        if not all([lat1, lon1, lat2, lon2]):
+            return None
+
+        R = 6371  # Earth's radius in kilometers
+
+        lat1_rad = math.radians(float(lat1))
+        lat2_rad = math.radians(float(lat2))
+        delta_lat = math.radians(float(lat2) - float(lat1))
+        delta_lon = math.radians(float(lon2) - float(lon1))
+
+        a = math.sin(delta_lat/2)**2 + math.cos(lat1_rad) * math.cos(lat2_rad) * math.sin(delta_lon/2)**2
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+
+        return R * c
+
+    # Calculate distances and filter by radius if location provided
+    venues_with_distance = []
+    for venue in venues:
+        if user_lat and user_lon and venue.latitude and venue.longitude:
+            distance = calculate_distance(user_lat, user_lon, venue.latitude, venue.longitude)
+            venue.distance = round(distance, 1) if distance else None
+
+            # Filter by radius (if not "all")
+            if radius != 'all':
+                try:
+                    radius_km = float(radius)
+                    if distance and distance <= radius_km:
+                        venues_with_distance.append(venue)
+                except ValueError:
+                    venues_with_distance.append(venue)
+            else:
+                venues_with_distance.append(venue)
+        else:
+            venue.distance = None
+            venues_with_distance.append(venue)
+
+    # Sort by distance if available, otherwise by name
+    if user_lat and user_lon:
+        venues_with_distance.sort(key=lambda v: (v.distance is None, v.distance if v.distance is not None else float('inf')))
+    else:
+        venues_with_distance.sort(key=lambda v: v.name)
+
+    context = {
+        'venues': venues_with_distance,
+        'user_lat': user_lat,
+        'user_lon': user_lon,
+        'radius': radius,
+    }
+    return render(request, 'venues/venue_list.html', context)
 
 def merchant_detail(request, slug, merchant_id):
     venue = get_object_or_404(Venue, slug=slug)
