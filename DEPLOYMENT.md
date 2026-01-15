@@ -151,15 +151,27 @@ git push origin main
 
 ## Troubleshooting
 
+### "No module named 'app'" Error
+**Problem:** Render is using default start command instead of the one specified in render.yaml.
+
+**Solution:**
+1. Go to your Web Service in Render dashboard
+2. Navigate to **Settings** → **Build & Deploy**
+3. Set **Start Command** manually to: `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
+4. Click **Save Changes**
+5. Trigger a manual deploy
+
 ### Build fails
 - Check `build.sh` permissions: `chmod +x build.sh`
 - Verify all dependencies in `requirements.txt`
 - Check logs for specific error messages
+- Ensure Python version is compatible (3.12.0)
 
 ### Database connection errors
 - Verify `DATABASE_URL` is set correctly
 - Ensure database and web service are in same region
 - Check database is running and accessible
+- Wait for database to fully initialize before first deploy
 
 ### Static files not loading
 - Ensure `python manage.py collectstatic` runs in build.sh
@@ -167,9 +179,10 @@ git push origin main
 - Check WhiteNoise middleware is before other middleware
 
 ### 502 Bad Gateway
-- Check start command is correct: `gunicorn config.wsgi:application`
+- Check start command is correct: `gunicorn config.wsgi:application --bind 0.0.0.0:$PORT`
 - Verify `WSGI_APPLICATION` setting in settings.py
 - Check logs for application startup errors
+- Ensure `ALLOWED_HOSTS` includes your Render domain
 
 ## Cost Estimates (2025)
 

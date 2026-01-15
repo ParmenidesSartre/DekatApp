@@ -4,8 +4,9 @@ services:
     name: smartmaps-saas
     runtime: python
     plan: starter  # Free tier - upgrade to starter+ for production
-    buildCommand: "./build.sh"
-    startCommand: "gunicorn config.wsgi:application"
+    region: oregon  # or singapore for closer to Malaysia
+    buildCommand: "chmod +x build.sh && ./build.sh"
+    startCommand: "gunicorn config.wsgi:application --bind 0.0.0.0:$PORT"
     envVars:
       - key: PYTHON_VERSION
         value: 3.12.0
