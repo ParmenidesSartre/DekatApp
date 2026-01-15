@@ -184,6 +184,15 @@ git push origin main
 - Check logs for application startup errors
 - Ensure `ALLOWED_HOSTS` includes your Render domain
 
+### Database tables don't exist (ProgrammingError: relation does not exist)
+**Problem:** Migrations didn't run during deployment, so database tables are missing.
+
+**Solution:** Migrations now run automatically on every startup via the `start.sh` script. If you still see this error:
+1. Check the startup logs to see if migrations ran successfully
+2. Verify `DATABASE_URL` environment variable is set correctly
+3. Ensure the database is accessible from your web service
+4. Trigger a manual redeploy to run migrations again
+
 ## Cost Estimates (2025)
 
 - **Free Tier:**
