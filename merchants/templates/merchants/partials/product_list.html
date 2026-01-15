@@ -1,0 +1,73 @@
+{% load merchants_extras %}
+
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    {% for product in products %}
+    <div class="bg-white rounded-3xl p-4 shadow-card border border-gray-100">
+        <div class="aspect-[4/3] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100">
+            {% with img=product.images.all|first %}
+                {% if img %}
+                    <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}" class="w-full h-full object-cover">
+                {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-gray-300">
+                        <i class="fa-solid fa-image text-3xl"></i>
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div class="mt-3">
+            <div class="flex items-start justify-between gap-2">
+                <div class="min-w-0">
+                    <a class="font-display font-bold text-gray-900 truncate hover:underline" href="{% url 'product_detail' venue.slug product.id %}">{{ product.name }}</a>
+                    <div class="text-xs text-gray-500 font-semibold mt-1 truncate">
+                        {{ product.merchant.name }} • {{ product.merchant.floor.name }}
+                    </div>
+                </div>
+                {% if product.min_price %}
+                <div class="text-xs font-extrabold text-brand-main shrink-0">RM{{ product.min_price }}</div>
+                {% endif %}
+            </div>
+            {% with d=distance_map|get_item:product.id %}
+                {% if d %}
+                <div class="mt-2 inline-flex items-center gap-2 text-[10px] font-extrabold px-2 py-1 rounded-xl bg-emerald-50 text-emerald-700 border border-emerald-100">
+                    <i class="fa-solid fa-location-dot"></i> {{ d|floatformat:1 }} km
+                </div>
+                {% endif %}
+            {% endwith %}
+
+            {% if product.description %}
+            <p class="text-sm text-gray-600 mt-2 line-clamp-2">{{ product.description }}</p>
+            {% endif %}
+
+            <div class="mt-3 flex flex-wrap items-center gap-2">
+                <a href="{% url 'merchant_detail' venue.slug product.merchant.id %}" class="bg-white text-gray-700 border border-gray-200 font-display font-bold text-xs px-3 py-2 rounded-2xl shadow-sm hover:shadow-md transition-all inline-flex items-center gap-2">
+                    <i class="fa-solid fa-store"></i> Shop
+                </a>
+                {% if product.merchant.phone_number %}
+                <a href="https://wa.me/{{ product.merchant.phone_number|cut:'+'|cut:' ' }}?text={{ ('Hi! I want to ask about: ' |add:product.name)|urlencode }}" target="_blank" class="bg-[#25D366] text-white font-display font-bold text-xs px-3 py-2 rounded-2xl shadow-sm hover:bg-[#20bd5a] transition-colors inline-flex items-center gap-2">
+                    <i class="fa-brands fa-whatsapp"></i> Ask
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="bg-white rounded-3xl p-6 shadow-card border border-gray-100 text-sm text-gray-600 col-span-full">
+        No items found. Try another keyword.
+    </div>
+    {% endfor %}
+</div>
+
+{% if products.has_next %}
+<div id="load-more-products" class="text-center pt-6 pb-2">
+    <button
+        hx-get="?page={{ products.next_page_number }}{% if search_query %}&q={{ search_query }}{% endif %}{% if current_category %}&category={{ current_category }}{% endif %}{% if near %}&near=1&radius={{ radius_km }}{% endif %}"
+        hx-trigger="click"
+        hx-target="#load-more-products"
+        hx-swap="outerHTML"
+        class="bg-white text-brand-main font-display font-bold py-3 px-8 rounded-full shadow-md border-2 border-brand-main hover:bg-brand-main hover:text-white hover:shadow-lg transition-all transform active:scale-95 flex items-center gap-2 mx-auto">
+        <span>Muat lagi ({{ products.next_page_number }})</span>
+        <i class="fa-solid fa-arrow-down"></i>
+    </button>
+</div>
+{% endif %}

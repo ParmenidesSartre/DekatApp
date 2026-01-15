@@ -1,0 +1,73 @@
+{% extends "venues/base.html" %}
+
+{% block title %}Items - {{ venue.name }}{% endblock %}
+
+{% block content %}
+<div class="bg-white/60 backdrop-blur-md rounded-5xl p-6 md:p-10 border border-white shadow-card mb-8 relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-44 h-44 bg-pop-purple rounded-full blur-3xl opacity-40 -mr-12 -mt-12"></div>
+    <div class="absolute bottom-0 left-0 w-44 h-44 bg-pop-blue rounded-full blur-3xl opacity-40 -ml-12 -mb-12"></div>
+
+    <div class="relative z-10">
+        <span class="inline-flex items-center gap-2 py-1 px-4 rounded-full bg-white border border-slate-100 text-xs font-bold tracking-wide mb-3 shadow-sm">
+            <i class="fa-solid fa-bag-shopping text-indigo-500"></i> Item search
+        </span>
+        <h1 class="font-display text-3xl md:text-4xl font-extrabold text-slate-900 leading-tight">{{ venue.name }}</h1>
+        <p class="text-slate-500 font-semibold mt-2">Search by items (not just shop names).</p>
+    </div>
+</div>
+
+<div class="space-y-5">
+    <form method="get" class="relative">
+        {% if current_category %}<input type="hidden" name="category" value="{{ current_category }}">{% endif %}
+        {% if near %}<input type="hidden" name="near" value="1">{% endif %}
+        {% if radius_km %}<input type="hidden" name="radius" value="{{ radius_km }}">{% endif %}
+        <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+            <span class="text-xl text-slate-400"><i class="fa-solid fa-magnifying-glass"></i></span>
+        </div>
+        <input type="text" name="q" value="{{ search_query }}"
+               class="block w-full py-4 pl-12 pr-4 text-base font-semibold text-slate-900 bg-white/70 backdrop-blur border border-white rounded-3xl shadow-soft focus:ring-4 focus:ring-indigo-200 placeholder-slate-400 transition-all"
+               placeholder="Cari: baju kurung, sneakers, tudung...">
+    </form>
+
+    <div class="flex flex-wrap items-center gap-2">
+        <a href="?{% if search_query %}q={{ search_query }}&{% endif %}{% if current_category %}category={{ current_category }}&{% endif %}near=1&radius=15"
+           class="{% if near %}bg-brand-main text-white border-brand-main{% else %}bg-white text-slate-700 border-slate-100{% endif %} font-display font-bold text-xs px-4 py-2 rounded-2xl border shadow-sm hover:shadow-md transition-all inline-flex items-center gap-2">
+            <i class="fa-solid fa-location-crosshairs"></i> Near me (15km)
+        </a>
+        {% if near and not has_location %}
+        <a href="{% url 'profile' %}" class="text-xs font-bold bg-pop-orange/40 border-2 border-white px-4 py-2 rounded-2xl inline-flex items-center gap-2">
+            <i class="fa-solid fa-location-dot"></i> Set location in profile
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="flex space-x-3 overflow-x-auto pb-2 scrollbar-hide">
+        <a href="{% url 'venue_item_search' venue.slug %}{% if near %}?near=1&radius={{ radius_km }}{% endif %}"
+           class="flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-bold transition-all border-2 shadow-sm
+           {% if not current_category %}
+                bg-brand-main text-white border-brand-main
+           {% else %}
+                bg-white text-slate-600 border-white hover:border-slate-200
+           {% endif %}">
+           Semua
+        </a>
+
+        {% for cat in categories %}
+        <a href="?category={{ cat.slug }}{% if search_query %}&q={{ search_query }}{% endif %}{% if near %}&near=1&radius={{ radius_km }}{% endif %}"
+           class="flex-shrink-0 px-5 py-2.5 rounded-full text-sm font-bold transition-all border-2 shadow-sm
+           {% if current_category == cat.slug %}
+                bg-brand-main text-white border-brand-main
+           {% else %}
+                bg-white text-slate-600 border-white hover:border-slate-200
+           {% endif %}">
+           {{ cat.name }}
+        </a>
+        {% endfor %}
+    </div>
+</div>
+
+<div id="product-list" class="mt-6">
+    {% include "merchants/partials/product_list.html" %}
+</div>
+{% endblock %}
+

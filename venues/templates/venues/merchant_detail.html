@@ -1,0 +1,117 @@
+{% extends "venues/base.html" %}
+
+{% block title %}{{ merchant.name }} - {{ venue.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <a href="{% url 'venue_directory' venue.slug %}" class="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-gray-900">
+        <i class="fa-solid fa-arrow-left"></i> Back to {{ venue.name }}
+    </a>
+</div>
+
+<div class="bg-white rounded-[2.5rem] p-6 shadow-card border border-gray-100">
+    <div class="flex items-start gap-4">
+        <div class="w-16 h-16 shrink-0 rounded-2xl bg-gray-50 border border-gray-200 flex items-center justify-center p-2 overflow-hidden">
+            {% if merchant.logo %}
+                <img src="{{ merchant.logo.url }}" class="w-full h-full object-contain" alt="{{ merchant.name }}">
+            {% else %}
+                <i class="fa-solid fa-store text-gray-300 text-2xl"></i>
+            {% endif %}
+        </div>
+        <div class="flex-1 min-w-0">
+            <div class="flex items-start justify-between gap-3">
+                <div class="min-w-0">
+                    <h1 class="font-display font-bold text-2xl text-gray-900 truncate">{{ merchant.name }}</h1>
+                    <div class="text-sm text-gray-500 font-semibold mt-1">
+                        {% if merchant.category %}{{ merchant.category.name }} • {% endif %}{{ merchant.floor.name }}
+                    </div>
+                </div>
+                <span class="bg-pop-blue/40 text-indigo-700 text-xs font-extrabold px-3 py-2 rounded-2xl border-2 border-white shrink-0">
+                    Lot {{ merchant.lot_number|default:"-" }}
+                </span>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 mt-3">
+                {% if is_open_now %}
+                <span class="bg-emerald-100 text-emerald-800 text-[10px] font-extrabold px-3 py-2 rounded-2xl border border-emerald-200">
+                    Open now
+                </span>
+                {% endif %}
+                {% if merchant.is_halal %}
+                <span class="text-white font-bold text-[10px] bg-halal px-2 py-1 rounded-md flex items-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-check"></i> HALAL
+                </span>
+                {% endif %}
+                {% if merchant.accepts_ewallet %}
+                <span class="text-gray-700 font-bold text-[10px] bg-emerald-50 px-2 py-1 rounded-md border border-emerald-100 flex items-center gap-1">
+                    <i class="fa-solid fa-wallet text-emerald-600"></i> E-Wallet
+                </span>
+                {% endif %}
+                {% if merchant.is_featured %}
+                <span class="bg-orange-100 text-orange-700 text-[10px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1">
+                    <i class="fa-solid fa-sparkles"></i> Pilihan Ramai
+                </span>
+                {% endif %}
+            </div>
+
+            <div class="mt-4 flex flex-wrap items-center gap-2">
+                {% include "venues/partials/follow_button.html" with merchant=merchant is_following=is_following %}
+                    <a href="{% url 'merchant_updates' venue.slug merchant.id %}" class="bg-white text-slate-700 border border-slate-100 font-display font-bold text-xs px-3 py-2 rounded-2xl shadow-sm hover:shadow-md transition-all inline-flex items-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Updates
+                    </a>
+            </div>
+        </div>
+    </div>
+
+    {% if merchant.storefront_image %}
+    <div class="mt-5 overflow-hidden rounded-3xl border border-gray-100 bg-gray-50">
+        <img src="{{ merchant.storefront_image.url }}" alt="{{ merchant.name }}" class="w-full h-56 object-cover">
+    </div>
+    {% endif %}
+
+    <div class="mt-5 grid gap-3">
+        {% if merchant.nearest_entrance %}
+        <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-3 rounded-2xl">
+            <i class="fa-solid fa-location-dot text-gray-400"></i>
+            <span class="font-semibold">{{ merchant.nearest_entrance }}</span>
+        </div>
+        {% endif %}
+        {% if merchant.operating_hours %}
+        <div class="flex items-center gap-2 text-sm text-gray-600 bg-gray-50 p-3 rounded-2xl">
+            <i class="fa-regular fa-clock text-gray-400"></i>
+            <span class="font-semibold">{{ merchant.operating_hours }}</span>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if merchant.description %}
+    <p class="mt-5 text-sm text-gray-600 leading-relaxed">{{ merchant.description }}</p>
+    {% endif %}
+
+    <div class="mt-6 grid grid-cols-2 gap-3">
+        {% if merchant.phone_number %}
+        <a href="tel:{{ merchant.phone_number }}" class="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#25D366] text-white font-bold text-sm shadow-md hover:bg-[#20bd5a] transition-colors">
+            <i class="fa-brands fa-whatsapp text-lg"></i> Hubungi
+        </a>
+        {% else %}
+        <div class="flex items-center justify-center gap-2 py-3 rounded-xl bg-gray-100 text-gray-400 font-bold text-sm">
+            <i class="fa-brands fa-whatsapp text-lg"></i> No WhatsApp
+        </div>
+        {% endif %}
+
+        {% if merchant.instagram %}
+        <a href="{{ merchant.instagram }}" target="_blank" class="flex items-center justify-center gap-2 py-3 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold text-sm shadow-md">
+            <i class="fa-brands fa-instagram text-lg"></i> Insta
+        </a>
+        {% elif merchant.website %}
+        <a href="{{ merchant.website }}" target="_blank" class="flex items-center justify-center gap-2 py-3 rounded-xl bg-brand-main text-white font-bold text-sm shadow-md hover:bg-brand-dark transition-colors">
+            <i class="fa-solid fa-globe"></i> Website
+        </a>
+        {% else %}
+        <div class="flex items-center justify-center gap-2 py-3 rounded-xl bg-gray-100 text-gray-400 font-bold text-sm">
+            <i class="fa-solid fa-link"></i> No link
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

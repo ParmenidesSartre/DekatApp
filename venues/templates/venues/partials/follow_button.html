@@ -1,0 +1,18 @@
+{% if request.user.is_authenticated %}
+<button
+    hx-post="{% url 'merchant_follow' merchant.floor.venue.slug merchant.id %}"
+    hx-target="this"
+    hx-swap="outerHTML"
+    class="{% if is_following %}bg-gray-900 text-white{% else %}bg-white text-gray-700 border border-gray-200{% endif %} font-display font-bold text-xs px-3 py-2 rounded-2xl shadow-sm hover:shadow-md transition-all inline-flex items-center gap-2">
+    {% if is_following %}
+        <i class="fa-solid fa-bell"></i> Following
+    {% else %}
+        <i class="fa-regular fa-bell"></i> Follow
+    {% endif %}
+</button>
+{% else %}
+<a href="{% url 'account_login' %}" class="bg-white text-gray-700 border border-gray-200 font-display font-bold text-xs px-3 py-2 rounded-2xl shadow-sm hover:shadow-md transition-all inline-flex items-center gap-2">
+    <i class="fa-regular fa-bell"></i> Follow
+</a>
+{% endif %}
+

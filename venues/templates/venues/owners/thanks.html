@@ -1,0 +1,171 @@
+{% extends "venues/base.html" %}
+
+{% block title %}Thanks - Dekat{% endblock %}
+
+{% block content %}
+<!-- Page-Specific Styles -->
+<style>
+    .mesh-bg {
+        background-color: #FDFBF7;
+        background-image: 
+            radial-gradient(at 10% 0%, hsla(256,96%,77%,0.2) 0px, transparent 50%),
+            radial-gradient(at 90% 0%, hsla(326,90%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 96% 91%, hsla(186,88%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(43,94%,76%,0.2) 0px, transparent 50%);
+    }
+
+    /* Animation initial states */
+    .js-hide { opacity: 0; }
+    .card-enter { opacity: 0; transform: scale(0.9); }
+    
+    .confetti {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background-color: #f00;
+        opacity: 0;
+    }
+</style>
+
+<!-- Anime.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+<div class="max-w-2xl mx-auto px-4 relative min-h-[80vh] flex flex-col justify-center items-center">
+    
+    <!-- Floating Decorations -->
+    <div class="floating-icon absolute top-20 left-10 text-5xl opacity-0 hidden md:block select-none">🎉</div>
+    <div class="floating-icon absolute bottom-20 right-10 text-5xl opacity-0 hidden md:block select-none">💌</div>
+
+    <!-- Main Card -->
+    <div class="card-enter bg-white/60 backdrop-blur-xl rounded-[3rem] p-10 md:p-14 border border-white shadow-soft text-center relative overflow-hidden w-full">
+        
+        <!-- Confetti Container -->
+        <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+        <!-- Background Blob -->
+        <div class="blob-anim absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-emerald-400/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+        <!-- Success Icon -->
+        <div class="relative inline-block mb-6">
+            <div class="w-24 h-24 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-4xl shadow-sm relative z-10 check-icon">
+                <i class="fa-solid fa-check"></i>
+            </div>
+            <!-- Ripple Effect -->
+            <div class="absolute inset-0 bg-emerald-400/30 rounded-full z-0 ripple-effect"></div>
+        </div>
+
+        <h1 class="stagger-enter js-hide font-display font-extrabold text-3xl md:text-4xl text-slate-900 mb-4">
+            Terima kasih!
+        </h1>
+        
+        <p class="stagger-enter js-hide text-slate-500 font-bold text-lg leading-relaxed max-w-md mx-auto mb-10">
+            We've received your details. Our team will reach out shortly to set up your personalized Dekat demo.
+        </p>
+
+        <!-- Actions -->
+        <div class="stagger-enter js-hide flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{% url 'owners' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand-main text-white font-display font-bold py-4 px-8 rounded-3xl shadow-cute hover:shadow-cute-hover hover:-translate-y-1 active:translate-y-0 transition-all duration-200">
+                <i class="fa-solid fa-arrow-left"></i> Back to Owners
+            </a>
+            <a href="{% url 'home' %}" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-slate-700 font-display font-bold py-4 px-8 rounded-3xl border-2 border-slate-100 hover:bg-slate-50 hover:border-slate-200 transition-all duration-200">
+                <i class="fa-solid fa-house"></i> Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // 1. Elastic Card Entrance
+        anime({
+            targets: '.card-enter',
+            scale: [0.8, 1],
+            opacity: [0, 1],
+            duration: 1200,
+            easing: 'easeOutElastic(1, .6)',
+            delay: 100
+        });
+
+        // 2. Check Icon Bounce
+        anime({
+            targets: '.check-icon',
+            scale: [0, 1],
+            rotate: [-45, 0],
+            duration: 1000,
+            easing: 'easeOutElastic(1, .5)',
+            delay: 400
+        });
+
+        // 3. Ripple Effect
+        anime({
+            targets: '.ripple-effect',
+            scale: [1, 2],
+            opacity: [1, 0],
+            duration: 1500,
+            easing: 'easeOutQuad',
+            loop: true,
+            delay: 800
+        });
+
+        // 4. Staggered Text
+        anime({
+            targets: '.stagger-enter',
+            translateY: [20, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(150, {start: 600}),
+            easing: 'easeOutQuad'
+        });
+
+        // 5. Floating Icons
+        const floatingIcons = document.querySelectorAll('.floating-icon');
+        anime({
+            targets: floatingIcons,
+            opacity: [0, 0.6],
+            duration: 2000,
+            easing: 'linear',
+            delay: 800
+        });
+
+        floatingIcons.forEach(el => {
+            function randomFloat() {
+                anime({
+                    targets: el,
+                    translateX: anime.random(-30, 30),
+                    translateY: anime.random(-30, 30),
+                    rotate: anime.random(-15, 15),
+                    duration: anime.random(3000, 6000),
+                    easing: 'easeInOutQuad',
+                    complete: randomFloat
+                });
+            }
+            randomFloat();
+        });
+
+        // 6. Confetti Explosion
+        const container = document.getElementById('confetti-container');
+        const colors = ['#6366F1', '#10B981', '#F59E0B', '#EC4899', '#8B5CF6'];
+
+        for (let i = 0; i < 50; i++) {
+            const confetti = document.createElement('div');
+            confetti.classList.add('confetti');
+            confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+            confetti.style.left = '50%';
+            confetti.style.top = '50%';
+            container.appendChild(confetti);
+
+            anime({
+                targets: confetti,
+                translateX: () => anime.random(-300, 300),
+                translateY: () => anime.random(-300, 300),
+                scale: () => anime.random(0.2, 1.5),
+                rotate: () => anime.random(0, 360),
+                opacity: [1, 0],
+                duration: () => anime.random(1000, 2000),
+                easing: 'easeOutExpo',
+                delay: 400
+            });
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,177 @@
+{% extends "venues/base.html" %}
+
+{% block title %}Login - Dekat{% endblock %}
+
+{% block content %}
+<!-- Styles specific to this page (Mesh Gradient, Scrollbar, Animations) -->
+<style>
+    .mesh-bg {
+        background-color: #FDFBF7;
+        background-image: 
+            radial-gradient(at 10% 0%, hsla(256,96%,77%,0.2) 0px, transparent 50%),
+            radial-gradient(at 90% 0%, hsla(326,90%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 96% 91%, hsla(186,88%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(43,94%,76%,0.2) 0px, transparent 50%);
+    }
+
+    /* Initial States for JS Animation to prevent flash */
+    .js-hide { opacity: 0; }
+    .card-enter { opacity: 0; transform: translateY(20px); }
+</style>
+
+<!-- Anime.js CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+<div class="max-w-4xl mx-auto relative px-4">
+    
+    <!-- Animated Decorations -->
+    <div class="floating-icon absolute -top-12 left-0 text-5xl opacity-0 hidden md:block select-none">✨</div>
+    <div class="floating-icon absolute bottom-10 -right-10 text-5xl opacity-0 hidden md:block select-none">🍄</div>
+
+    <!-- Header Section -->
+    <div class="text-center mb-10 relative z-10">
+        <div class="inline-block bg-white/50 backdrop-blur-sm border border-white px-4 py-1.5 rounded-full mb-4 shadow-sm stagger-enter js-hide">
+             <span class="font-bold text-xs tracking-wide text-indigo-500 uppercase">
+                👋 Welcome Back
+            </span>
+        </div>
+        <h1 class="stagger-enter js-hide font-display font-extrabold text-4xl md:text-5xl text-slate-900 mb-3">
+            Log in to Dekat
+        </h1>
+        <p class="stagger-enter js-hide text-slate-500 font-bold text-lg">
+            Choose what you’re logging in as.
+        </p>
+    </div>
+
+    <!-- Background Blob (Center) -->
+    <div class="blob-anim absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-pop-purple/20 rounded-full blur-3xl pointer-events-none -z-10"></div>
+
+    <!-- Selection Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+        
+        <!-- Option 1: Customer -->
+        <a href="{% url 'login_customer' %}" class="card-enter group relative bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 border-2 border-white shadow-soft hover:shadow-card hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+            <!-- Hover Background Effect -->
+            <div class="absolute inset-0 bg-gradient-to-br from-blue-50 to-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <div class="relative z-10 flex flex-col h-full items-start">
+                <div class="w-16 h-16 rounded-3xl bg-pop-blue text-indigo-600 flex items-center justify-center text-2xl mb-6 shadow-sm group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+                
+                <h2 class="font-display font-bold text-2xl text-slate-900 mb-2">Customer</h2>
+                <p class="text-slate-500 font-medium mb-8 leading-relaxed">
+                    Follow shops, get updates, save favorites (soon).
+                </p>
+                
+                <div class="mt-auto flex items-center gap-2 text-indigo-600 font-bold group-hover:gap-4 transition-all">
+                    <span>Continue</span>
+                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+        <!-- Option 2: Venue Owner -->
+        <a href="{% url 'login_venue' %}" class="card-enter group relative bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 border-2 border-white shadow-soft hover:shadow-card hover:-translate-y-2 transition-all duration-300 overflow-hidden">
+            <!-- Hover Background Effect -->
+            <div class="absolute inset-0 bg-gradient-to-br from-orange-50 to-amber-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+            
+            <div class="relative z-10 flex flex-col h-full items-start">
+                <div class="w-16 h-16 rounded-3xl bg-pop-orange text-orange-700 flex items-center justify-center text-2xl mb-6 shadow-sm group-hover:scale-110 group-hover:-rotate-6 transition-transform duration-300">
+                    <i class="fa-solid fa-building"></i>
+                </div>
+                
+                <h2 class="font-display font-bold text-2xl text-slate-900 mb-2">Venue Owner</h2>
+                <p class="text-slate-500 font-medium mb-8 leading-relaxed">
+                    Manage directories and billing (admin for now).
+                </p>
+                
+                <div class="mt-auto flex items-center gap-2 text-orange-600 font-bold group-hover:gap-4 transition-all">
+                    <span>Continue</span>
+                    <div class="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </div>
+                </div>
+            </div>
+        </a>
+
+    </div>
+    
+    <!-- Footer Text -->
+    <div class="mt-12 text-center stagger-enter js-hide">
+        <p class="text-slate-500 font-bold text-sm bg-white/50 inline-block px-6 py-3 rounded-full border border-white backdrop-blur-sm">
+            No account? <a href="{% url 'signup_choice' %}" class="text-brand-main hover:text-brand-dark underline decoration-2 underline-offset-2 ml-1">Sign up</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // 1. Header Text Stagger
+        anime({
+            targets: '.stagger-enter',
+            translateY: [20, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(100, {start: 200}),
+            easing: 'easeOutQuad'
+        });
+
+        // 2. Cards Elastic Entrance (Staggered)
+        anime({
+            targets: '.card-enter',
+            translateY: [50, 0],
+            opacity: [0, 1],
+            scale: [0.9, 1],
+            duration: 1000,
+            delay: anime.stagger(150, {start: 500}),
+            easing: 'easeOutElastic(1, .8)'
+        });
+
+        // 3. Floating Icons Fade In
+        const floatingIcons = document.querySelectorAll('.floating-icon');
+        anime({
+            targets: floatingIcons,
+            opacity: [0, 0.6],
+            duration: 2000,
+            easing: 'linear',
+            delay: 800
+        });
+
+        // 4. Continuous Random Float
+        floatingIcons.forEach(el => {
+            function randomFloat() {
+                const x = anime.random(-20, 20);
+                const y = anime.random(-20, 20);
+                const rot = anime.random(-10, 10);
+                const dur = anime.random(3000, 6000);
+
+                anime({
+                    targets: el,
+                    translateX: x,
+                    translateY: y,
+                    rotate: rot,
+                    duration: dur,
+                    easing: 'easeInOutQuad',
+                    complete: randomFloat
+                });
+            }
+            randomFloat();
+        });
+
+        // 5. Blob Animation
+        anime({
+            targets: '.blob-anim',
+            scale: [1, 1.2],
+            rotate: [0, 45],
+            opacity: [0.2, 0.3],
+            duration: 5000,
+            direction: 'alternate',
+            loop: true,
+            easing: 'easeInOutSine'
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,253 @@
+{% extends "venues/base.html" %}
+
+{% block title %}Partners - Dekat{% endblock %}
+
+{% block content %}
+<!-- Page-Specific Styles -->
+<style>
+    .mesh-bg {
+        background-color: #FDFBF7;
+        background-image: 
+            radial-gradient(at 10% 0%, hsla(256,96%,77%,0.2) 0px, transparent 50%),
+            radial-gradient(at 90% 0%, hsla(326,90%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 96% 91%, hsla(186,88%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(43,94%,76%,0.2) 0px, transparent 50%);
+    }
+
+    /* Animation initial states */
+    .js-hide { opacity: 0; }
+    .card-enter { opacity: 0; transform: translateY(30px); }
+    
+    .sticker {
+        transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .sticker:hover { transform: rotate(2deg) scale(1.05); z-index: 10; }
+
+    /* Coin particle for the revenue effect */
+    .coin-particle {
+        position: absolute;
+        pointer-events: none;
+        opacity: 0;
+        font-size: 1.2rem;
+    }
+</style>
+
+<!-- Anime.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+<div class="max-w-6xl mx-auto px-4 relative min-h-screen">
+    
+    <!-- Floating Decorations -->
+    <div class="floating-icon absolute top-20 left-4 text-5xl opacity-0 hidden lg:block select-none">🏢</div>
+    <div class="floating-icon absolute top-40 right-10 text-5xl opacity-0 hidden lg:block select-none">📈</div>
+
+    <!-- Hero Section -->
+    <div class="text-center pt-10 mb-16 relative z-10 max-w-4xl mx-auto">
+        
+        <!-- Badge -->
+        <div class="stagger-enter js-hide inline-block bg-white/60 backdrop-blur-sm border border-white px-4 py-1.5 rounded-full mb-6 shadow-sm transform hover:scale-105 transition-transform cursor-default">
+            <span class="font-bold text-xs tracking-wide text-indigo-500 uppercase flex items-center gap-2">
+                🤝 Dekat for Partners
+            </span>
+        </div>
+
+        <!-- Headline -->
+        <h1 class="stagger-enter js-hide font-display text-4xl md:text-6xl font-extrabold text-slate-900 mb-6 leading-[1.1] tracking-tight relative">
+            Turn your directory into a <br class="hidden md:block" />
+            <span id="revenue-trigger" class="relative inline-block cursor-pointer group">
+                <span class="relative z-10 text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500 border-b-4 border-pop-lime/50 group-hover:border-pop-lime transition-all">
+                    revenue channel.
+                </span>
+                <!-- Hidden particles container -->
+                <span id="coin-container" class="absolute inset-0 pointer-events-none"></span>
+            </span>
+        </h1>
+
+        <!-- Funny Sticker -->
+        <div class="sticker-pop js-hide absolute -top-4 right-10 md:right-20 hidden md:block rotate-[12deg]">
+            <div class="sticker bg-pop-orange text-orange-900 px-4 py-2 rounded-xl text-xs font-bold shadow-soft border-2 border-white">
+                ⚠️ Warning: May cause <br> excessive foot traffic!
+            </div>
+        </div>
+
+        <p class="stagger-enter js-hide text-lg text-slate-500 font-medium max-w-2xl mx-auto mb-10 leading-relaxed">
+            A QR-first directory for malls, campuses, and expos. <br class="hidden sm:block"> 
+            Manage merchants, sell featured spots, and watch your venue come alive.
+        </p>
+
+        <!-- CTA Buttons -->
+        <div class="stagger-enter js-hide flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="{% url 'owners_demo' %}" class="w-full sm:w-auto px-8 py-4 bg-brand-main text-white font-display font-bold text-lg rounded-3xl shadow-cute hover:shadow-cute-hover hover:-translate-y-1 active:translate-y-0 transition-all flex items-center justify-center gap-2 group">
+                <i class="fa-solid fa-calendar-check group-hover:rotate-12 transition-transform"></i> 
+                Book a Demo
+            </a>
+            <a href="{% url 'pricing' %}" class="w-full sm:w-auto px-8 py-4 bg-white text-slate-700 border-2 border-slate-100 font-display font-bold text-lg rounded-3xl hover:bg-slate-50 hover:border-slate-200 transition-all flex items-center justify-center gap-2">
+                <i class="fa-solid fa-tag"></i> Pricing
+            </a>
+        </div>
+    </div>
+
+    <!-- Feature Cards Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 relative z-10 mb-16">
+        
+        <!-- Card 1: QR First -->
+        <div class="card-enter group bg-white/70 backdrop-blur-xl border border-white rounded-[2.5rem] p-8 relative overflow-hidden shadow-soft hover:shadow-card hover:-translate-y-2 transition-all duration-300">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-pop-blue/30 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-pop-blue/50 transition-colors"></div>
+            
+            <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-indigo-600 text-2xl shadow-sm mb-6 group-hover:rotate-12 transition-transform duration-300">
+                <i class="fa-solid fa-qrcode"></i>
+            </div>
+            
+            <h3 class="font-display text-2xl font-bold text-slate-900 mb-3">QR-First Entry</h3>
+            <p class="text-slate-600 font-medium leading-relaxed">
+                No apps to download. One scan and visitors are instantly inside your digital directory.
+            </p>
+        </div>
+
+        <!-- Card 2: Featured Slots (Money) -->
+        <div class="card-enter group bg-white/70 backdrop-blur-xl border border-white rounded-[2.5rem] p-8 relative overflow-hidden shadow-soft hover:shadow-card hover:-translate-y-2 transition-all duration-300">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-pop-orange/30 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-pop-orange/50 transition-colors"></div>
+            
+            <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-orange-600 text-2xl shadow-sm mb-6 group-hover:-rotate-12 transition-transform duration-300">
+                <i class="fa-solid fa-star"></i>
+            </div>
+            
+            <h3 class="font-display text-2xl font-bold text-slate-900 mb-3">Featured Slots</h3>
+            <p class="text-slate-600 font-medium leading-relaxed">
+                Sell "Pilihan Ramai" placements to merchants and generate extra income. 
+                <span class="text-orange-600 font-bold text-xs bg-orange-100 px-2 py-0.5 rounded-full ml-1">Cha-ching! 💸</span>
+            </p>
+        </div>
+
+        <!-- Card 3: Easy Ops (The Joke) -->
+        <div class="card-enter group bg-white/70 backdrop-blur-xl border border-white rounded-[2.5rem] p-8 relative overflow-hidden shadow-soft hover:shadow-card hover:-translate-y-2 transition-all duration-300">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-pop-lime/30 rounded-full blur-3xl -mr-10 -mt-10 group-hover:bg-pop-lime/50 transition-colors"></div>
+            
+            <div class="w-14 h-14 bg-white rounded-2xl flex items-center justify-center text-lime-700 text-2xl shadow-sm mb-6 group-hover:scale-110 transition-transform duration-300">
+                <i class="fa-solid fa-cat"></i>
+            </div>
+            
+            <h3 class="font-display text-2xl font-bold text-slate-900 mb-3">Easy Ops</h3>
+            <p class="text-slate-600 font-medium leading-relaxed">
+                Manage venues and merchants with zero headache.
+            </p>
+            <div class="mt-4 inline-block bg-lime-100/50 text-lime-800 text-xs font-bold px-3 py-1.5 rounded-lg border border-lime-200">
+                🐱 So easy your cat could run it.
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Bottom CTA -->
+    <div class="card-enter bg-slate-900 rounded-[3rem] p-8 md:p-12 text-center text-white relative overflow-hidden shadow-xl mb-12">
+        <!-- Background decorative circles -->
+        <div class="absolute top-0 left-0 w-64 h-64 bg-indigo-600/30 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2"></div>
+        <div class="absolute bottom-0 right-0 w-64 h-64 bg-purple-600/30 rounded-full blur-3xl translate-x-1/2 translate-y-1/2"></div>
+        
+        <div class="relative z-10">
+            <h2 class="font-display font-extrabold text-3xl md:text-4xl mb-4">Ready to try?</h2>
+            <p class="text-slate-300 font-medium text-lg mb-8 max-w-xl mx-auto">
+                Tell us your venue name — we’ll set up a demo link + QR code for you to test drive.
+            </p>
+            
+            <a href="{% url 'owners_demo' %}" class="inline-flex items-center gap-3 bg-white text-slate-900 font-display font-bold text-lg px-8 py-4 rounded-full shadow-[0_0_20px_rgba(255,255,255,0.3)] hover:scale-105 hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] transition-all duration-300">
+                <span>Start Now</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // 1. Staggered Entrance
+        anime({
+            targets: '.stagger-enter',
+            translateY: [20, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(100, {start: 200}),
+            easing: 'easeOutQuad'
+        });
+
+        // 2. Cards Staggered Pop
+        anime({
+            targets: '.card-enter',
+            translateY: [50, 0],
+            opacity: [0, 1],
+            scale: [0.95, 1],
+            delay: anime.stagger(150, {start: 600}),
+            easing: 'easeOutElastic(1, .8)'
+        });
+
+        // 3. Sticker Entrance
+        anime({
+            targets: '.sticker-pop',
+            scale: [0, 1],
+            rotate: [0, 12],
+            opacity: [0, 1],
+            delay: 1000,
+            easing: 'easeOutElastic(1, .6)'
+        });
+
+        // 4. Floating Icons
+        const floatingIcons = document.querySelectorAll('.floating-icon');
+        anime({
+            targets: floatingIcons,
+            opacity: [0, 0.6],
+            duration: 2000,
+            easing: 'linear',
+            delay: 800
+        });
+
+        floatingIcons.forEach(el => {
+            function randomFloat() {
+                anime({
+                    targets: el,
+                    translateX: anime.random(-30, 30),
+                    translateY: anime.random(-30, 30),
+                    rotate: anime.random(-15, 15),
+                    duration: anime.random(3000, 6000),
+                    easing: 'easeInOutQuad',
+                    complete: randomFloat
+                });
+            }
+            randomFloat();
+        });
+
+        // 5. "Revenue" Coin Shower Logic
+        const revenueTrigger = document.getElementById('revenue-trigger');
+        const coinContainer = document.getElementById('coin-container');
+        const coins = ['💰', '💸', '🪙', '💎', '🚀'];
+
+        revenueTrigger.addEventListener('mouseenter', () => {
+            // Create 10 random coins
+            for (let i = 0; i < 10; i++) {
+                const coin = document.createElement('div');
+                coin.classList.add('coin-particle');
+                coin.innerText = coins[Math.floor(Math.random() * coins.length)];
+                
+                // Random starting position near the word
+                const startX = Math.random() * 100 + '%';
+                coin.style.left = startX;
+                coin.style.top = '50%';
+                
+                coinContainer.appendChild(coin);
+
+                // Animate falling/exploding
+                anime({
+                    targets: coin,
+                    translateY: [0, anime.random(-100, -50)], // Go up first
+                    translateX: anime.random(-50, 50),
+                    opacity: [1, 0],
+                    scale: [0.5, 1.2],
+                    rotate: anime.random(-180, 180),
+                    duration: anime.random(800, 1200),
+                    easing: 'easeOutCirc',
+                    complete: () => coin.remove() // Cleanup
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "venues/base.html" %}
+
+{% block title %}Updates - {{ merchant.name }}{% endblock %}
+
+{% block content %}
+<div class="mb-5">
+    <a href="{% url 'merchant_detail' venue.slug merchant.id %}" class="inline-flex items-center gap-2 text-sm font-bold text-gray-600 hover:text-gray-900">
+        <i class="fa-solid fa-arrow-left"></i> Back to {{ merchant.name }}
+    </a>
+</div>
+
+    <div class="bg-white/60 backdrop-blur-md rounded-5xl p-6 md:p-10 border border-white shadow-card">
+    <div class="flex items-start justify-between gap-4">
+        <div class="min-w-0">
+            <h1 class="font-display font-bold text-2xl text-gray-900">Updates</h1>
+            <p class="text-sm text-gray-600 mt-1">{{ merchant.name }} • {{ venue.name }}</p>
+        </div>
+        <div class="shrink-0">
+            {% include "venues/partials/follow_button.html" with merchant=merchant is_following=is_following %}
+        </div>
+    </div>
+</div>
+
+<div class="mt-5 space-y-4">
+    {% for update in updates %}
+    <div class="bg-white rounded-3xl p-5 shadow-card border border-gray-100">
+        <div class="flex items-start justify-between gap-3">
+            <div class="font-display font-bold text-gray-900">{{ update.title }}</div>
+            <div class="text-xs text-gray-400 font-semibold shrink-0">{{ update.published_at|date:"M j" }}</div>
+        </div>
+        {% if update.body %}
+        <p class="text-sm text-gray-600 mt-3 leading-relaxed">{{ update.body }}</p>
+        {% endif %}
+        {% if update.link %}
+        <div class="mt-4">
+        <a href="{{ update.link }}" target="_blank" class="inline-flex items-center gap-2 bg-brand-main text-white font-display font-bold text-xs px-3 py-2 rounded-2xl shadow-sm hover:bg-brand-dark transition-colors">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open link
+        </a>
+        </div>
+        {% endif %}
+    </div>
+    {% empty %}
+    <div class="bg-white rounded-3xl p-6 shadow-card border border-gray-100 text-sm text-gray-600">
+        No updates yet.
+    </div>
+    {% endfor %}
+</div>
+
+{% if updates.has_next %}
+<div class="text-center pt-6">
+    <a href="?page={{ updates.next_page_number }}" class="inline-flex items-center gap-2 bg-white text-brand-main font-display font-bold py-3 px-8 rounded-full shadow-md border-2 border-brand-main hover:bg-brand-main hover:text-white hover:shadow-lg transition-all">
+        Load more
+        <i class="fa-solid fa-arrow-down"></i>
+    </a>
+</div>
+{% endif %}
+{% endblock %}

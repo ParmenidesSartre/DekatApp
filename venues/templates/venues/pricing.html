@@ -1,0 +1,255 @@
+{% extends "venues/base.html" %}
+
+{% block title %}Pricing - Dekat{% endblock %}
+
+{% block content %}
+<!-- Page-Specific Styles -->
+<style>
+    .mesh-bg {
+        background-color: #FDFBF7;
+        background-image: 
+            radial-gradient(at 10% 0%, hsla(256,96%,77%,0.2) 0px, transparent 50%),
+            radial-gradient(at 90% 0%, hsla(326,90%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 96% 91%, hsla(186,88%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(43,94%,76%,0.2) 0px, transparent 50%);
+    }
+
+    /* Animation initial states */
+    .js-hide { opacity: 0; }
+    .card-enter { opacity: 0; transform: translateY(30px); }
+
+    /* Custom Toggle Switch */
+    .toggle-checkbox:checked {
+        right: 0;
+        border-color: #6366F1;
+    }
+    .toggle-checkbox:checked + .toggle-label {
+        background-color: #6366F1;
+    }
+</style>
+
+<!-- Anime.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+<!-- Vanilla Tilt for 3D effect -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vanilla-tilt/1.8.0/vanilla-tilt.min.js"></script>
+
+
+<div class="max-w-6xl mx-auto px-4 relative min-h-screen">
+    
+    <!-- Hero Section -->
+    <div class="text-center pt-10 mb-12 relative z-10 max-w-3xl mx-auto">
+        <h1 class="stagger-enter js-hide font-display text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">
+            Simple Pricing.
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-500 to-purple-500">
+                No Surprise Fees.
+            </span>
+        </h1>
+        <p class="stagger-enter js-hide text-lg text-slate-500 font-medium mb-8">
+            Start small and scale as your venue traffic grows.
+        </p>
+
+        <!-- Billing Toggle -->
+        <div class="stagger-enter js-hide flex items-center justify-center gap-4 mb-8">
+            <span class="text-sm font-bold text-slate-500">Monthly</span>
+            <div class="relative inline-block w-14 h-8 align-middle select-none transition duration-200 ease-in">
+                <input type="checkbox" name="toggle" id="billing-toggle" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 border-slate-200 appearance-none cursor-pointer top-1 left-1 transition-all duration-300 z-10 checked:translate-x-6 checked:border-brand-main"/>
+                <label for="billing-toggle" class="toggle-label block overflow-hidden h-8 rounded-full bg-slate-200 cursor-pointer transition-colors duration-300"></label>
+            </div>
+            <span class="text-sm font-bold text-slate-900">Yearly <span class="text-xs text-brand-main bg-indigo-50 px-2 py-0.5 rounded-full ml-1 border border-indigo-100">-20%</span></span>
+        </div>
+    </div>
+
+    <!-- Pricing Grid -->
+    <div class="grid md:grid-cols-3 gap-6 relative z-10 mb-16 px-4">
+        
+        <!-- Starter Plan -->
+        <div class="card-enter tilt-card bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-soft flex flex-col h-full" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
+            <div class="mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-seedling"></i>
+                </div>
+                <h3 class="font-display font-bold text-xl text-slate-900">Starter</h3>
+                <p class="text-slate-500 text-sm font-medium mt-1">Perfect for small markets.</p>
+            </div>
+            <div class="mb-6">
+                <span class="text-4xl font-extrabold text-slate-900">RM</span>
+                <span class="text-5xl font-extrabold text-slate-900 count-up" data-value="200">0</span>
+                <span class="text-sm font-bold text-slate-400">/mo</span>
+            </div>
+            <ul class="space-y-3 mb-8 flex-1">
+                <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                    <i class="fa-solid fa-check text-emerald-500 bg-emerald-50 rounded-full p-1 text-xs"></i> 1 Venue Directory
+                </li>
+                <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                    <i class="fa-solid fa-check text-emerald-500 bg-emerald-50 rounded-full p-1 text-xs"></i> Basic Search
+                </li>
+                <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                    <i class="fa-solid fa-check text-emerald-500 bg-emerald-50 rounded-full p-1 text-xs"></i> Direct WhatsApp Links
+                </li>
+            </ul>
+            <a href="{% url 'owners_demo' %}" class="w-full block text-center py-3 rounded-2xl border-2 border-slate-100 font-bold text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-all">
+                Get Started
+            </a>
+        </div>
+
+        <!-- Pro Plan (Spotlight) -->
+        <div class="card-enter tilt-card bg-slate-900 text-white rounded-[2.5rem] p-8 shadow-xl flex flex-col h-full relative overflow-hidden group transform md:-translate-y-4" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
+            <!-- Animated Gradient Border Effect -->
+            <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-20 group-hover:opacity-40 transition-opacity duration-500"></div>
+            <div class="absolute inset-[2px] bg-slate-900 rounded-[2.4rem]"></div>
+            
+            <div class="relative z-10 flex flex-col h-full">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xl mb-4">
+                        <i class="fa-solid fa-rocket"></i>
+                    </div>
+                    <span class="bg-indigo-500 text-white text-[10px] font-bold px-3 py-1 rounded-full">POPULAR</span>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-display font-bold text-xl text-white">Pro</h3>
+                    <p class="text-slate-400 text-sm font-medium mt-1">For growing malls & campuses.</p>
+                </div>
+                <div class="mb-6">
+                    <span class="text-4xl font-extrabold text-white">RM</span>
+                    <span class="text-5xl font-extrabold text-white count-up" data-value="399">0</span>
+                    <span class="text-sm font-bold text-slate-500">/mo</span>
+                </div>
+                <ul class="space-y-3 mb-8 flex-1">
+                    <li class="flex items-center gap-3 text-sm font-bold text-slate-300">
+                        <i class="fa-solid fa-check text-indigo-400 bg-indigo-500/20 rounded-full p-1 text-xs"></i> Featured Merchant Slots
+                    </li>
+                    <li class="flex items-center gap-3 text-sm font-bold text-slate-300">
+                        <i class="fa-solid fa-check text-indigo-400 bg-indigo-500/20 rounded-full p-1 text-xs"></i> Basic Analytics
+                    </li>
+                    <li class="flex items-center gap-3 text-sm font-bold text-slate-300">
+                        <i class="fa-solid fa-check text-indigo-400 bg-indigo-500/20 rounded-full p-1 text-xs"></i> Priority Support
+                    </li>
+                </ul>
+                <a href="{% url 'owners_demo' %}" class="w-full block text-center py-3 rounded-2xl bg-indigo-600 font-bold text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 active:scale-95">
+                    Try Pro Free
+                </a>
+            </div>
+        </div>
+
+        <!-- Enterprise Plan -->
+        <div class="card-enter tilt-card bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-8 border border-white shadow-soft flex flex-col h-full" data-tilt data-tilt-max="5" data-tilt-speed="400" data-tilt-perspective="1000">
+            <div class="mb-4">
+                <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-600 flex items-center justify-center text-xl mb-4">
+                    <i class="fa-solid fa-building-columns"></i>
+                </div>
+                <h3 class="font-display font-bold text-xl text-slate-900">Enterprise</h3>
+                <p class="text-slate-500 text-sm font-medium mt-1">Multi-venue management.</p>
+            </div>
+            <div class="mb-6 flex items-baseline gap-1">
+                <span class="text-4xl font-extrabold text-slate-900">Custom</span>
+            </div>
+            <ul class="space-y-3 mb-8 flex-1">
+                <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                    <i class="fa-solid fa-check text-emerald-500 bg-emerald-50 rounded-full p-1 text-xs"></i> Unlimited Venues
+                </li>
+                <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                    <i class="fa-solid fa-check text-emerald-500 bg-emerald-50 rounded-full p-1 text-xs"></i> Custom API Access
+                </li>
+                <li class="flex items-center gap-3 text-sm font-bold text-slate-600">
+                    <i class="fa-solid fa-check text-emerald-500 bg-emerald-50 rounded-full p-1 text-xs"></i> Dedicated Success Manager
+                </li>
+            </ul>
+            <a href="mailto:sales@dekat.com" class="w-full block text-center py-3 rounded-2xl border-2 border-slate-100 font-bold text-slate-600 hover:border-slate-300 hover:bg-slate-50 transition-all">
+                Contact Sales
+            </a>
+        </div>
+    </div>
+
+    <!-- FAQ / Info Section -->
+    <div class="max-w-4xl mx-auto card-enter bg-white/60 backdrop-blur-md rounded-[2.5rem] p-8 md:p-12 border border-white shadow-soft text-center mb-12">
+        <h2 class="font-display font-extrabold text-2xl text-slate-900 mb-6">How billing works</h2>
+        <div class="grid md:grid-cols-3 gap-8 text-left">
+            <div>
+                <h4 class="font-bold text-slate-900 mb-2">💰 Subscription</h4>
+                <p class="text-sm text-slate-500 font-medium">Billed monthly or yearly. Cancel anytime from your dashboard.</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-slate-900 mb-2">⭐ Featured Add-ons</h4>
+                <p class="text-sm text-slate-500 font-medium">Charge merchants for premium slots. You keep 100% of the markup (for now).</p>
+            </div>
+            <div>
+                <h4 class="font-bold text-slate-900 mb-2">💳 Payment Methods</h4>
+                <p class="text-sm text-slate-500 font-medium">We support FPX, DuitNow, and all major Credit Cards via Stripe.</p>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        
+        // 1. Staggered Entrance
+        anime({
+            targets: '.stagger-enter',
+            translateY: [20, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(100, {start: 200}),
+            easing: 'easeOutQuad'
+        });
+
+        // 2. Cards Pop Up
+        anime({
+            targets: '.card-enter',
+            translateY: [50, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(150, {start: 600}),
+            easing: 'easeOutElastic(1, .8)'
+        });
+
+        // 3. Count Up Animation for Prices
+        const counters = document.querySelectorAll('.count-up');
+        counters.forEach(counter => {
+            const target = +counter.getAttribute('data-value');
+            anime({
+                targets: counter,
+                innerHTML: [0, target],
+                round: 1, // Ensure integer values
+                easing: 'easeInOutExpo',
+                duration: 2000,
+                delay: 800
+            });
+        });
+
+        // 4. Toggle Animation
+        const toggle = document.getElementById('billing-toggle');
+        const priceDisplay = document.querySelectorAll('.count-up');
+        
+        toggle.addEventListener('change', (e) => {
+            const isYearly = e.target.checked;
+            
+            // Bounce the prices when toggled
+            anime({
+                targets: '.count-up',
+                scale: [1, 1.2, 1],
+                duration: 400,
+                easing: 'easeOutElastic(1, .5)'
+            });
+
+            // Logic to update prices (Visual demo)
+            priceDisplay.forEach(el => {
+                let basePrice = +el.getAttribute('data-value');
+                if (isYearly) {
+                    el.innerHTML = Math.floor(basePrice * 0.8);
+                } else {
+                    el.innerHTML = basePrice;
+                }
+            });
+        });
+
+        // 5. Initialize Tilt (Manually if auto-init fails)
+        VanillaTilt.init(document.querySelectorAll(".tilt-card"), {
+            max: 5,
+            speed: 400,
+            glare: true,
+            "max-glare": 0.2,
+        });
+    });
+</script>
+{% endblock %}

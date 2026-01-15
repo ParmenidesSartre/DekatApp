@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Dekat{% endblock %}</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+
+        <!-- Anime.js for Fancy Animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;800&family=Quicksand:wght@500;600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Quicksand', 'sans-serif'],
+                        display: ['Outfit', 'sans-serif'],
+                    },
+                    colors: {
+                        cream: '#FDFBF7',
+                        pop: {
+                            purple: '#E0C6FD',
+                            pink: '#FBCFE8',
+                            blue: '#C4E4FF',
+                            lime: '#D9F99D',
+                            orange: '#FFD8A8',
+                            dark: '#2D2A2E',
+                        },
+                        brand: {
+                            main: '#6366F1',
+                            dark: '#4F46E5',
+                        }
+                    },
+                    boxShadow: {
+                        'soft': '0 20px 40px -15px rgba(0, 0, 0, 0.05)',
+                        'cute': '0 8px 0px #F1F5F9',
+                        'cute-hover': '0 4px 0px #E2E8F0',
+                        'card': '0 10px 30px -10px rgba(99, 102, 241, 0.1)',
+                    },
+                    borderRadius: {
+                        '4xl': '2.5rem',
+                        '5xl': '3rem',
+                    },
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .mesh-bg {
+            background-color: #FDFBF7;
+            background-image:
+                radial-gradient(at 10% 0%, hsla(256,96%,77%,0.2) 0px, transparent 50%),
+                radial-gradient(at 90% 0%, hsla(326,90%,76%,0.2) 0px, transparent 50%),
+                radial-gradient(at 96% 91%, hsla(186,88%,76%,0.2) 0px, transparent 50%),
+                radial-gradient(at 0% 100%, hsla(43,94%,76%,0.2) 0px, transparent 50%);
+        }
+
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #E2E8F0; border-radius: 20px; border: 3px solid #FDFBF7; }
+        ::-webkit-scrollbar-thumb:hover { background: #CBD5E1; }
+
+        .bouncy {
+            transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .bouncy:hover { transform: scale(1.02) rotate(-1deg); }
+        .bouncy:active { transform: scale(0.98); }
+
+        .sticker {
+            transform: rotate(-2deg);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .sticker:hover { transform: rotate(2deg) scale(1.05); z-index: 10; }
+    </style>
+</head>
+
+<body class="mesh-bg text-slate-700 antialiased min-h-screen selection:bg-pop-purple selection:text-pop-dark">
+    <nav class="fixed top-5 left-0 right-0 z-50 flex justify-center px-4">
+        <div class="bg-white/70 backdrop-blur-xl border border-white/50 px-6 py-3 rounded-full shadow-soft flex items-center justify-between gap-6 max-w-5xl w-full">
+            <a href="{% url 'home' %}" class="flex items-center gap-2 group">
+                <div class="w-10 h-10 bg-brand-main rounded-2xl flex items-center justify-center text-white text-lg shadow-lg shadow-indigo-200 group-hover:rotate-12 transition-transform">
+                    <i class="fa-solid fa-map-pin"></i>
+                </div>
+                <span class="font-display font-bold text-xl text-slate-800 tracking-tight">Dekat</span>
+            </a>
+
+            <div class="hidden md:flex items-center gap-6 font-bold text-sm text-slate-500">
+                <a href="{% url 'venue_list' %}" class="hover:text-brand-main transition-colors">Explorer</a>
+                <a href="{% url 'owners' %}" class="hover:text-brand-main transition-colors">Partners</a>
+                {% if request.user.is_authenticated %}
+                    <a href="{% url 'user_feed' %}" class="hover:text-brand-main transition-colors">Updates</a>
+                    {% if user_role == 'VENUE' %}
+                        <a href="{% url 'venue_portal' %}" class="hover:text-brand-main transition-colors">Portal</a>
+                    {% endif %}
+                    <a href="{% url 'profile' %}" class="hover:text-brand-main transition-colors">Profile</a>
+                {% endif %}
+            </div>
+
+            {% if request.user.is_authenticated %}
+                <a href="{% url 'account_logout' %}" class="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:scale-105 active:scale-95">
+                    Logout
+                </a>
+            {% else %}
+                <a href="{% url 'login_choice' %}" class="bg-slate-900 text-white px-5 py-2.5 rounded-full text-sm font-bold shadow-lg hover:bg-slate-800 transition-all hover:scale-105 active:scale-95">
+                    Login
+                </a>
+            {% endif %}
+        </div>
+    </nav>
+
+    <main class="pt-32 pb-20 px-4 max-w-6xl mx-auto">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="text-center py-10 pb-20">
+        <div class="inline-flex items-center gap-2 text-slate-400 font-bold text-sm bg-white px-4 py-2 rounded-full shadow-sm border border-slate-100">
+            <span>Dekat • Made in Malaysia</span>
+            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+            <a href="{% url 'terms' %}" class="hover:text-indigo-500">Terms</a>
+            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+            <a href="{% url 'faq' %}" class="hover:text-indigo-500">Help</a>
+        </div>
+    </footer>
+
+    <script>
+        document.body.addEventListener('htmx:configRequest', function (event) {
+            const match = document.cookie.match(/csrftoken=([^;]+)/);
+            if (match) event.detail.headers['X-CSRFToken'] = match[1];
+        });
+    </script>
+</body>
+</html>

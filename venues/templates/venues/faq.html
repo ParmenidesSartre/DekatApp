@@ -1,0 +1,52 @@
+{% extends "venues/base.html" %}
+
+{% block title %}Bantuan - Dekat{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-[2.5rem] p-6 shadow-card border border-gray-100">
+    <h1 class="font-display font-bold text-2xl text-gray-900">FAQ</h1>
+    <p class="text-sm text-gray-600 mt-1">Soalan biasa untuk pengunjung & venue owners.</p>
+</div>
+
+<div class="mt-5 space-y-4">
+    <details class="group bg-white rounded-3xl p-5 shadow-card border border-gray-100">
+        <summary class="cursor-pointer select-none font-display font-bold text-gray-900 flex items-center justify-between">
+            Macam mana nak guna directory ni?
+            <i class="fa-solid fa-chevron-down text-sm text-gray-400 transition-transform group-open:rotate-180"></i>
+        </summary>
+        <div class="pt-3 text-sm text-gray-600">
+            Scan QR, cari nama kedai / lot number, filter kategori, dan tekan WhatsApp/Instagram untuk hubungi.
+        </div>
+    </details>
+
+    <details class="group bg-white rounded-3xl p-5 shadow-card border border-gray-100">
+        <summary class="cursor-pointer select-none font-display font-bold text-gray-900 flex items-center justify-between">
+            Kenapa ada label “Halal”?
+            <i class="fa-solid fa-chevron-down text-sm text-gray-400 transition-transform group-open:rotate-180"></i>
+        </summary>
+        <div class="pt-3 text-sm text-gray-600">
+            Untuk bantu pengguna cepat identify merchant yang halal certified (based on venue’s data).
+        </div>
+    </details>
+
+    <details class="group bg-white rounded-3xl p-5 shadow-card border border-gray-100">
+        <summary class="cursor-pointer select-none font-display font-bold text-gray-900 flex items-center justify-between">
+            Info merchant salah. Macam mana nak report?
+            <i class="fa-solid fa-chevron-down text-sm text-gray-400 transition-transform group-open:rotate-180"></i>
+        </summary>
+        <div class="pt-3 text-sm text-gray-600">
+            For now, contact the venue admin team. A “Report issue” workflow can be added next (form + moderation).
+        </div>
+    </details>
+
+    <details class="group bg-white rounded-3xl p-5 shadow-card border border-gray-100">
+        <summary class="cursor-pointer select-none font-display font-bold text-gray-900 flex items-center justify-between">
+            Venue owners: macam mana billing dia?
+            <i class="fa-solid fa-chevron-down text-sm text-gray-400 transition-transform group-open:rotate-180"></i>
+        </summary>
+        <div class="pt-3 text-sm text-gray-600">
+            Subscription monthly based on plan. Status is tracked in Admin via `VenueSubscription` (Trialing/Active/Past Due/Canceled).
+        </div>
+    </details>
+</div>
+{% endblock %}

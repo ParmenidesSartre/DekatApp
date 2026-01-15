@@ -1,0 +1,45 @@
+{% extends "venues/base.html" %}
+
+{% block title %}New Product - Dekat{% endblock %}
+
+{% block content %}
+<div class="bg-white rounded-[2.5rem] p-6 shadow-card border border-gray-100">
+    <h1 class="font-display font-bold text-2xl text-gray-900">New product</h1>
+    <p class="text-sm text-gray-600 mt-1">{{ merchant.name }}</p>
+</div>
+
+<form method="post" class="mt-5 bg-white rounded-3xl p-6 shadow-card border border-gray-100">
+    {% csrf_token %}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="md:col-span-2">
+            <label class="block text-sm font-bold text-gray-700 mb-1">Product name</label>
+            <input name="name" class="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900" placeholder="e.g. Baju Kurung Modern">
+        </div>
+        <div class="md:col-span-2">
+            <label class="block text-sm font-bold text-gray-700 mb-1">Description</label>
+            <textarea name="description" rows="4" class="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900" placeholder="Short description..."></textarea>
+        </div>
+        <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Variant name</label>
+            <input name="variant_name" class="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900" placeholder="e.g. Size M / Red">
+        </div>
+        <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Price (RM)</label>
+            <input name="price_rm" class="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900" placeholder="e.g. 59.90">
+        </div>
+        <div>
+            <label class="block text-sm font-bold text-gray-700 mb-1">Stock qty</label>
+            <input name="stock_qty" class="w-full rounded-2xl border border-gray-200 bg-gray-50 p-3 font-semibold text-gray-900" placeholder="e.g. 10">
+        </div>
+    </div>
+
+    <div class="mt-6 flex items-center gap-3">
+        <button class="inline-flex items-center gap-2 bg-brand-main text-white font-display font-bold py-3 px-6 rounded-3xl shadow-cute hover:shadow-cute-hover hover:translate-y-1 transition-all">
+            <i class="fa-solid fa-plus"></i> Create
+        </button>
+        <a href="{% url 'merchant_portal' %}?merchant={{ merchant.id }}" class="inline-flex items-center gap-2 bg-white text-gray-700 font-display font-bold py-3 px-6 rounded-full shadow-md border border-gray-200 hover:bg-gray-50 transition-colors">
+            <i class="fa-solid fa-arrow-left"></i> Back
+        </a>
+    </div>
+</form>
+{% endblock %}

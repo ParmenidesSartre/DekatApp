@@ -1,0 +1,21 @@
+# Core Django
+Django==6.0.1
+
+# Authentication
+django-allauth==65.3.0
+
+# Database
+psycopg2-binary==2.9.10
+dj-database-url==2.2.0
+
+# Static Files
+whitenoise==6.8.2
+
+# Web Server
+gunicorn==23.0.0
+
+# Image Processing (for media uploads)
+Pillow==11.0.0
+
+# Environment Variables
+python-decouple==3.8

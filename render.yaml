@@ -1,0 +1,30 @@
+services:
+  # Django Web Service
+  - type: web
+    name: smartmaps-saas
+    runtime: python
+    plan: starter  # Free tier - upgrade to starter+ for production
+    buildCommand: "./build.sh"
+    startCommand: "gunicorn config.wsgi:application"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        sync: false  # Set this manually in Render dashboard
+      - key: DATABASE_URL
+        fromDatabase:
+          name: smartmaps-db
+          property: connectionString
+
+  # PostgreSQL Database
+  - type: pserv
+    name: smartmaps-db
+    runtime: postgresql
+    plan: starter  # Free tier - 90 day limit, upgrade for production
+    ipAllowList: []  # Allow connections from anywhere
+    databaseName: smartmaps
+    databaseUser: smartmaps_user

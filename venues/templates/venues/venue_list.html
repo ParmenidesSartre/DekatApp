@@ -1,0 +1,227 @@
+{% extends "venues/base.html" %}
+
+{% block title %}Explore - Dekat{% endblock %}
+
+{% block content %}
+<!-- Page-Specific Styles -->
+<style>
+    .mesh-bg {
+        background-color: #FDFBF7;
+        background-image: 
+            radial-gradient(at 10% 0%, hsla(256,96%,77%,0.2) 0px, transparent 50%),
+            radial-gradient(at 90% 0%, hsla(326,90%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 96% 91%, hsla(186,88%,76%,0.2) 0px, transparent 50%),
+            radial-gradient(at 0% 100%, hsla(43,94%,76%,0.2) 0px, transparent 50%);
+    }
+
+    /* Hide scrollbar for category pills */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Animation initial states */
+    .js-hide { opacity: 0; }
+    .card-enter { opacity: 0; transform: translateY(30px); }
+</style>
+
+<!-- Anime.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+
+<div class="max-w-7xl mx-auto px-4 relative min-h-screen">
+    
+    <!-- Floating Decorations -->
+    <div class="floating-icon absolute top-0 left-4 text-5xl opacity-0 hidden lg:block select-none">🔭</div>
+    <div class="floating-icon absolute top-20 right-10 text-5xl opacity-0 hidden lg:block select-none">🛸</div>
+
+    <!-- Header & Search Section -->
+    <div class="text-center mb-12 pt-8 relative z-10 max-w-3xl mx-auto">
+        <h1 class="stagger-enter js-hide font-display font-extrabold text-4xl md:text-5xl text-slate-900 mb-4">
+            Explore Spaces
+        </h1>
+        <p class="stagger-enter js-hide text-slate-500 font-bold text-lg mb-8">
+            Find your next hangout spot, campus, or shopping haven.
+        </p>
+
+        <!-- Search Bar -->
+        <div class="stagger-enter js-hide relative group z-20">
+            <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none text-slate-400 group-focus-within:text-brand-main transition-colors">
+                <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            </div>
+            <input type="text" 
+                   placeholder="Search for malls, campuses, or markets..." 
+                   class="w-full bg-white/80 backdrop-blur-xl rounded-full py-4 pl-14 pr-32 border-2 border-white shadow-soft text-slate-700 font-bold placeholder:text-slate-400 focus:outline-none focus:border-brand-main focus:ring-4 focus:ring-brand-main/10 transition-all">
+            <button class="absolute right-2 top-2 bottom-2 bg-brand-main text-white rounded-full px-6 font-bold shadow-md hover:bg-brand-dark hover:scale-105 active:scale-95 transition-all">
+                Search
+            </button>
+        </div>
+
+        <!-- Quick Filters (Horizontal Scroll) -->
+        <div class="stagger-enter js-hide flex justify-center gap-3 mt-6 overflow-x-auto pb-4 scrollbar-hide px-4">
+            <button class="whitespace-nowrap bg-brand-main text-white px-5 py-2 rounded-full text-sm font-bold shadow-md transform hover:-translate-y-1 transition-all">
+                All Places
+            </button>
+            <button class="whitespace-nowrap bg-white border border-white shadow-sm text-slate-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-pop-blue hover:text-indigo-600 hover:border-blue-200 transform hover:-translate-y-1 transition-all">
+                🛍️ Malls
+            </button>
+            <button class="whitespace-nowrap bg-white border border-white shadow-sm text-slate-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-pop-lime hover:text-green-700 hover:border-green-200 transform hover:-translate-y-1 transition-all">
+                🎓 Campuses
+            </button>
+            <button class="whitespace-nowrap bg-white border border-white shadow-sm text-slate-600 px-5 py-2 rounded-full text-sm font-bold hover:bg-pop-orange hover:text-orange-700 hover:border-orange-200 transform hover:-translate-y-1 transition-all">
+                🎨 Arts & Expo
+            </button>
+        </div>
+    </div>
+
+    <!-- Venue Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 pb-20 relative z-10">
+        {% for venue in venues %}
+        <a href="{% url 'venue_directory' venue.slug %}" class="card-enter group block bg-white rounded-[2.5rem] p-4 border border-white shadow-soft hover:shadow-card hover:-translate-y-2 transition-all duration-300">
+            <!-- Image Container -->
+            <div class="aspect-[4/3] bg-slate-100 rounded-[2rem] mb-5 overflow-hidden relative isolate">
+                {% if venue.cover_image %}
+                    <img src="{{ venue.cover_image.url }}" 
+                         alt="{{ venue.name }}" 
+                         loading="lazy"
+                         class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                {% else %}
+                    <div class="absolute inset-0 flex items-center justify-center text-slate-300 bg-slate-50">
+                        <i class="fa-solid fa-store text-5xl group-hover:scale-110 group-hover:rotate-6 transition-transform duration-300"></i>
+                    </div>
+                {% endif %}
+                
+                <!-- Overlay Gradient -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-60"></div>
+
+                <!-- Chips -->
+                <div class="absolute top-4 left-4 flex gap-2">
+                    <span class="bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-slate-700 shadow-sm">
+                        {{ venue.get_venue_type_display|default:"Venue" }}
+                    </span>
+                </div>
+                
+                <div class="absolute bottom-4 left-4 right-4 flex justify-between items-end">
+                    <span class="bg-emerald-400/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm border border-emerald-300/50">
+                        Open Now
+                    </span>
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="px-2 pb-2">
+                <div class="flex justify-between items-start mb-2">
+                    <h3 class="font-display text-xl font-bold text-slate-900 leading-tight group-hover:text-brand-main transition-colors">
+                        {{ venue.name }}
+                    </h3>
+                    <div class="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-brand-main group-hover:text-white transition-all">
+                        <i class="fa-solid fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform duration-300"></i>
+                    </div>
+                </div>
+                
+                <p class="text-sm text-slate-500 font-medium mb-4 line-clamp-2">
+                    {{ venue.description|default:"Discover shops, items, and more at this location." }}
+                </p>
+
+                <!-- Tags -->
+                <div class="flex flex-wrap gap-2">
+                    <span class="bg-pop-blue/30 text-indigo-600 px-3 py-1 rounded-lg text-xs font-bold">
+                        <i class="fa-solid fa-layer-group mr-1"></i> Directory
+                    </span>
+                    <span class="bg-pop-orange/30 text-orange-700 px-3 py-1 rounded-lg text-xs font-bold">
+                        <i class="fa-solid fa-tag mr-1"></i> Items
+                    </span>
+                </div>
+            </div>
+        </a>
+        {% empty %}
+        <!-- Empty State -->
+        <div class="col-span-full py-20 text-center">
+            <div class="inline-block p-8 rounded-full bg-white border-4 border-dashed border-slate-200 mb-6 animate-pulse">
+                <i class="fa-solid fa-map-location-dot text-6xl text-slate-300"></i>
+            </div>
+            <h3 class="font-display text-2xl font-bold text-slate-900 mb-2">No venues found yet!</h3>
+            <p class="text-slate-500 font-medium max-w-md mx-auto mb-8">
+                We couldn't find any venues matching your criteria. Try adjusting your search or come back later.
+            </p>
+            <a href="{% url 'owners' %}" class="inline-flex items-center gap-2 bg-brand-main text-white font-bold px-6 py-3 rounded-full hover:bg-brand-dark transition-colors shadow-cute hover:shadow-cute-hover">
+                <i class="fa-solid fa-plus"></i> Add Your Venue
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination Placeholder (Visual Only) -->
+    {% if venues|length > 6 %}
+    <div class="flex justify-center pb-20 relative z-10 card-enter">
+        <nav class="inline-flex bg-white rounded-full shadow-sm border border-slate-100 p-1">
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors">
+                <i class="fa-solid fa-chevron-left"></i>
+            </a>
+            <span class="w-10 h-10 flex items-center justify-center rounded-full bg-brand-main text-white font-bold shadow-md">1</span>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 font-bold hover:bg-slate-50 transition-colors">2</a>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full text-slate-600 font-bold hover:bg-slate-50 transition-colors">3</a>
+            <span class="w-10 h-10 flex items-center justify-center text-slate-400 font-bold">...</span>
+            <a href="#" class="w-10 h-10 flex items-center justify-center rounded-full text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-colors">
+                <i class="fa-solid fa-chevron-right"></i>
+            </a>
+        </nav>
+    </div>
+    {% endif %}
+
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1. Staggered Entrance for Header Elements
+        anime({
+            targets: '.stagger-enter',
+            translateY: [20, 0],
+            opacity: [0, 1],
+            delay: anime.stagger(100, {start: 200}),
+            easing: 'easeOutQuad'
+        });
+
+        // 2. Staggered Entrance for Cards
+        anime({
+            targets: '.card-enter',
+            translateY: [50, 0],
+            opacity: [0, 1],
+            scale: [0.95, 1],
+            delay: anime.stagger(100, {start: 600}), // Delay start until header is mostly done
+            easing: 'easeOutElastic(1, .8)',
+            duration: 1200
+        });
+
+        // 3. Floating Icons Animation
+        const floatingIcons = document.querySelectorAll('.floating-icon');
+        
+        // Initial fade in
+        anime({
+            targets: floatingIcons,
+            opacity: [0, 0.6],
+            duration: 2000,
+            easing: 'linear',
+            delay: 1000
+        });
+
+        // Continuous random float
+        floatingIcons.forEach(el => {
+            function randomFloat() {
+                const x = anime.random(-30, 30);
+                const y = anime.random(-30, 30);
+                const rot = anime.random(-15, 15);
+                const dur = anime.random(4000, 7000);
+
+                anime({
+                    targets: el,
+                    translateX: x,
+                    translateY: y,
+                    rotate: rot,
+                    duration: dur,
+                    easing: 'easeInOutQuad',
+                    complete: randomFloat
+                });
+            }
+            randomFloat();
+        });
+    });
+</script>
+{% endblock %}
