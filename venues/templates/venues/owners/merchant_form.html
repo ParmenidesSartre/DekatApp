@@ -255,5 +255,57 @@
     input[type="checkbox"]:hover {
         border-color: #8B5CF6;
     }
+
+    /* Custom dropdown styling for the options menu */
+    select option {
+        padding: 0.75rem 1rem;
+        background-color: white;
+        color: #1f2937;
+    }
+
+    select option:hover,
+    select option:focus,
+    select option:checked {
+        background: linear-gradient(to right, #f3e8ff, #faf5ff);
+        color: #7c3aed;
+        font-weight: 500;
+    }
+
+    /* Try to round the dropdown menu (limited browser support) */
+    select::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    select::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    select::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+
+    select::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
 </style>
+
+<script>
+// Add interactivity to make selects feel more polished
+document.addEventListener('DOMContentLoaded', function() {
+    const selects = document.querySelectorAll('select');
+
+    selects.forEach(select => {
+        // Add a subtle animation when opening
+        select.addEventListener('focus', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
+
+        select.addEventListener('blur', function() {
+            this.style.transform = 'translateY(0)';
+        });
+    });
+});
+</script>
 {% endblock %}
