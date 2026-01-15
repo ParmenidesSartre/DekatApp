@@ -1,0 +1,108 @@
+{% comment %}
+Custom Select Dropdown Component
+Usage: {% include "venues/owners/components/custom_select.html" with field=form.floor label="Floor" required=True %}
+{% endcomment %}
+
+<div x-data="{
+    open: false,
+    selected: '{{ field.value|default:'' }}',
+    selectedText: '{% if field.value %}{{ field.initial_text|default:'' }}{% endif %}',
+    search: '',
+    options: [
+        {% for value, text in field.field.choices %}
+        { value: '{{ value }}', text: '{{ text }}' },
+        {% endfor %}
+    ],
+    get filteredOptions() {
+        if (!this.search) return this.options;
+        return this.options.filter(opt =>
+            opt.text.toLowerCase().includes(this.search.toLowerCase())
+        );
+    },
+    selectOption(value, text) {
+        this.selected = value;
+        this.selectedText = text;
+        this.open = false;
+        this.search = '';
+        this.$refs.hiddenInput.value = value;
+    }
+}" @click.away="open = false" class="relative">
+
+    <!-- Label -->
+    <label class="block text-sm font-semibold text-gray-700 mb-1">
+        {{ label }}{% if required %} *{% endif %}
+    </label>
+
+    <!-- Hidden Input for Form Submission -->
+    <input type="hidden" name="{{ field.name }}" x-ref="hiddenInput" :value="selected">
+
+    <!-- Custom Select Button -->
+    <button
+        type="button"
+        @click="open = !open"
+        class="w-full px-4 py-3 bg-white border-2 border-gray-200 rounded-2xl text-left cursor-pointer transition-all hover:border-gray-300 focus:outline-none focus:border-purple-500 focus:ring-3 focus:ring-purple-100"
+        :class="open ? 'border-purple-500 ring-3 ring-purple-100' : ''"
+    >
+        <div class="flex items-center justify-between">
+            <span x-text="selectedText || 'Select {{ label|lower }}...'"
+                  :class="!selectedText ? 'text-gray-400' : 'text-gray-900'"
+                  class="font-medium"></span>
+            <svg class="w-5 h-5 text-gray-400 transition-transform"
+                 :class="open ? 'rotate-180' : ''"
+                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </div>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div x-show="open"
+         x-transition:enter="transition ease-out duration-100"
+         x-transition:enter-start="opacity-0 scale-95"
+         x-transition:enter-end="opacity-100 scale-100"
+         x-transition:leave="transition ease-in duration-75"
+         x-transition:leave-start="opacity-100 scale-100"
+         x-transition:leave-end="opacity-0 scale-95"
+         class="absolute z-50 w-full mt-2 bg-white border-2 border-gray-200 rounded-2xl shadow-xl max-h-60 overflow-hidden"
+         style="display: none;">
+
+        <!-- Search Box (optional, for long lists) -->
+        <div class="p-2 border-b border-gray-100" x-show="options.length > 5">
+            <input
+                type="text"
+                x-model="search"
+                placeholder="Search..."
+                class="w-full px-3 py-2 border border-gray-200 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                @click.stop
+            >
+        </div>
+
+        <!-- Options List -->
+        <div class="overflow-y-auto max-h-48 py-1">
+            <template x-for="option in filteredOptions" :key="option.value">
+                <div @click="selectOption(option.value, option.text)"
+                     class="px-4 py-3 cursor-pointer transition-colors hover:bg-purple-50 hover:text-purple-700"
+                     :class="selected == option.value ? 'bg-purple-100 text-purple-700 font-semibold' : 'text-gray-700'">
+                    <span x-text="option.text"></span>
+                    <svg x-show="selected == option.value"
+                         class="inline-block w-4 h-4 ml-2 text-purple-600"
+                         fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                    </svg>
+                </div>
+            </template>
+
+            <!-- No Results -->
+            <div x-show="filteredOptions.length === 0" class="px-4 py-3 text-gray-500 text-sm text-center">
+                No results found
+            </div>
+        </div>
+    </div>
+
+    <!-- Error Messages -->
+    {% if field.errors %}
+    <div class="mt-1 text-sm text-red-600">
+        {{ field.errors.0 }}
+    </div>
+    {% endif %}
+</div>
